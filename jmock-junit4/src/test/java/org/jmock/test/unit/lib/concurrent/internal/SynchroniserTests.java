@@ -13,8 +13,10 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.concurrent.Blitzer;
 import org.jmock.lib.concurrent.Synchroniser;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class SynchroniserTests {
     public interface Events {
         void action();

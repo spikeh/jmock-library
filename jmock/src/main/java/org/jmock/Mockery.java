@@ -4,6 +4,7 @@ import org.hamcrest.Description;
 import org.hamcrest.SelfDescribing;
 import org.jmock.api.*;
 import org.jmock.internal.*;
+import org.jmock.internal.perf.Sim;
 import org.jmock.lib.CamelCaseNamingScheme;
 import org.jmock.lib.IdentityExpectationErrorTranslator;
 import org.jmock.lib.JavaReflectionImposteriser;
@@ -29,13 +30,14 @@ import java.util.Set;
 public class Mockery implements SelfDescribing {
     private Imposteriser imposteriser = JavaReflectionImposteriser.INSTANCE;
     private ExpectationErrorTranslator expectationErrorTranslator = IdentityExpectationErrorTranslator.INSTANCE;
-    private MockObjectNamingScheme namingScheme = CamelCaseNamingScheme.INSTANCE;
+    protected MockObjectNamingScheme namingScheme = CamelCaseNamingScheme.INSTANCE;
     private ThreadingPolicy threadingPolicy = new SingleThreadedPolicy();
 
-    private final Set<String> mockNames = new HashSet<String>();
+    protected final Set<String> mockNames = new HashSet<String>();
     private final ReturnDefaultValueAction defaultAction = new ReturnDefaultValueAction(imposteriser);
     private final List<Invocation> actualInvocations = new ArrayList<Invocation>();
-    private final InvocationDispatcher dispatcher = new InvocationDispatcher();
+    protected InvocationDispatcher dispatcher = new InvocationDispatcher();
+    protected Sim sim = Sim.INSTANCE;
 
     private Error firstError = null;
 
@@ -109,7 +111,11 @@ public class Mockery implements SelfDescribing {
     public void setThreadingPolicy(ThreadingPolicy threadingPolicy) {
         this.threadingPolicy = threadingPolicy;
     }
-    
+
+    public void setInvocationDispatcher(InvocationDispatcher dispatcher) {
+        this.dispatcher = dispatcher;
+    }
+
     /*
      * API
      */
@@ -140,10 +146,9 @@ public class Mockery implements SelfDescribing {
         mockNames.add(name);
         
         Invokable invokable =
-            threadingPolicy.synchroniseAccessTo(
                 new ProxiedObjectIdentity(
                     new InvocationDiverter<CaptureControl>(
-                        CaptureControl.class, mock, mock)));
+                        CaptureControl.class, mock, mock));
         
         return imposteriser.imposterise(invokable, typeToMock, CaptureControl.class);
     }
@@ -281,7 +286,10 @@ public class Mockery implements SelfDescribing {
         }
         
         public Object invoke(Invocation invocation) throws Throwable {
-            return dispatch(invocation);
+            sim.stop();
+            Object o = dispatch(invocation);
+            sim.start();
+            return o;
         }
 
         public Object captureExpectationTo(ExpectationCapture capture) {

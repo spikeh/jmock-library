@@ -15,8 +15,10 @@ import org.hamcrest.Matchers;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.lib.concurrent.Blitzer;
+import org.junit.Ignore;
 
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+@Ignore
 public class WarnAboutMultipleThreadsAcceptanceTests extends TestCase {
     BlockingQueue<Throwable> exceptionsOnBackgroundThreads = new LinkedBlockingQueue<Throwable>();
 

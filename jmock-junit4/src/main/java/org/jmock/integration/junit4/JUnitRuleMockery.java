@@ -7,6 +7,8 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.fail;
@@ -39,14 +41,21 @@ import static org.junit.Assert.fail;
 
 public class JUnitRuleMockery extends JUnit4Mockery implements MethodRule {
     private final Mockomatic mockomatic = new Mockomatic(this);
+    final List<Double> threadResponseTimes = Collections.synchronizedList(new ArrayList<Double>());
 
-    public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
+    public Statement apply(final Statement base, final FrameworkMethod method, final Object target) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 prepare(target);
-                base.evaluate();
-                assertIsSatisfied();
+                try {
+                    base.evaluate();
+                } catch (AssertionError e) {
+                    throw e;
+                } finally {
+                    assertIsSatisfied();
+                    doExtraStuff(method);
+                }
             }
 
             private void prepare(final Object target) {
@@ -72,5 +81,11 @@ public class JUnitRuleMockery extends JUnit4Mockery implements MethodRule {
                 mockomatic.fillIn(target, allFields);
             }
         };
+    }
+
+    public void doExtraStuff(FrameworkMethod method) {}
+
+    public List<Double> runtimes() {
+        return threadResponseTimes;
     }
 }

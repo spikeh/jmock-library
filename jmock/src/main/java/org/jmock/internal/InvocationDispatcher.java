@@ -7,13 +7,20 @@ import org.jmock.api.ExpectationError;
 import org.jmock.api.Invocation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class InvocationDispatcher implements ExpectationCollector, SelfDescribing {
-	private List<Expectation> expectations = new ArrayList<Expectation>();
+    private static NetworkDispatcher networkDispatcher;
+	private List<Expectation> expectations = Collections.synchronizedList(new ArrayList<Expectation>());
 	private List<StateMachine> stateMachines = new ArrayList<StateMachine>();
-    
+    private double totalResponseTime = 0.0;
+
+    public static void setNetworkDispatcher(NetworkDispatcher dispatcher) {
+        networkDispatcher = dispatcher;
+    }
+
     public StateMachine newStateMachine(String name) {
         StateMachine stateMachine = new StateMachine(name);
         stateMachines.add(stateMachine);
@@ -78,11 +85,20 @@ public class InvocationDispatcher implements ExpectationCollector, SelfDescribin
 	public Object dispatch(Invocation invocation) throws Throwable {
 		for (Expectation expectation : expectations) {
 		    if (expectation.matches(invocation)) {
+                if (networkDispatcher != null) {
+                    networkDispatcher.query(invocation);
+                }
 		        return expectation.invoke(invocation);
             }
         }
         
         throw ExpectationError.unexpected("unexpected invocation", invocation);
 	}
+
+    public void updateResponseTime(long threadId) {}
+
+    public double totalResponseTime() {
+        return totalResponseTime;
+    }
 
 }
