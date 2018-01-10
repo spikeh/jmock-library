@@ -65,10 +65,11 @@ class TestClass {
         ObjectUnderTest obj = new ObjectUnderTest(instance);
         
         context.repeat(100, () -> {
-            exactly(1).of(instance).implementedMethod();
+            context.checking(new Expectations() {{
+                exactly(1).of(instance).implementedMethod();
+            }});
+            obj.doSomething();
         });
-        
-        obj.doSomething();
     }
 }
 ```
