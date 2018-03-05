@@ -86,7 +86,7 @@ public class InvocationDispatcher implements ExpectationCollector, SelfDescribin
 		for (Expectation expectation : expectations) {
 		    if (expectation.matches(invocation)) {
                 if (networkDispatcher != null) {
-                    networkDispatcher.query(invocation);
+                    networkDispatcher.query(invocation, ((InvocationExpectation)expectation).getParam());
                 }
 		        return expectation.invoke(invocation);
             }

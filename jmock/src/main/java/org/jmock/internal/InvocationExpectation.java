@@ -7,6 +7,7 @@ import org.jmock.api.Action;
 import org.jmock.api.Expectation;
 import org.jmock.api.Invocation;
 import org.jmock.internal.matcher.MethodMatcher;
+import org.jmock.internal.perf.Param;
 import org.jmock.lib.action.VoidAction;
 
 import java.lang.reflect.Method;
@@ -27,6 +28,7 @@ public class InvocationExpectation implements Expectation {
 	private boolean methodIsKnownToBeVoid = false;
 	private ParametersMatcher parametersMatcher = ANY_PARAMETERS;
     private Action action = new VoidAction();
+    private Param param = new Param();
     private boolean actionIsDefault = true;
     private List<OrderingConstraint> orderingConstraints = new ArrayList<OrderingConstraint>();
     private List<SideEffect> sideEffects = new ArrayList<SideEffect>();
@@ -66,6 +68,14 @@ public class InvocationExpectation implements Expectation {
     public void setAction(Action action) {
         this.action = action;
         this.actionIsDefault = false;
+    }
+
+    public void setParam(Param param) {
+        this.param = param;
+    }
+
+    public Param getParam() {
+        return param;
     }
     
     public void setDefaultAction(Action action) {

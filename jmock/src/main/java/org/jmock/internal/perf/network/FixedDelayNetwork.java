@@ -1,6 +1,7 @@
 package org.jmock.internal.perf.network;
 
 import org.jmock.api.Invocation;
+import org.jmock.internal.perf.Param;
 import org.jmock.internal.perf.Sim;
 import org.jmock.internal.perf.network.link.Link;
 import org.jmock.internal.perf.network.node.FixedDelayNode;
@@ -20,7 +21,7 @@ public class FixedDelayNetwork extends Network {
         node.link(nodeToSink);
     }
 
-    public void query(long threadId, Invocation invocation) {
+    public void query(long threadId, Invocation invocation, Param param) {
         Customer customer = new Customer(this, sim, Thread.currentThread().getId(), invocation);
         node.enter(customer);
     }

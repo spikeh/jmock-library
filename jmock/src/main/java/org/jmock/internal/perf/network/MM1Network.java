@@ -2,6 +2,7 @@ package org.jmock.internal.perf.network;
 
 import org.jmock.api.Invocation;
 import org.jmock.internal.perf.Delay;
+import org.jmock.internal.perf.Param;
 import org.jmock.internal.perf.Sim;
 import org.jmock.internal.perf.distribution.Exp;
 import org.jmock.internal.perf.network.link.Link;
@@ -21,7 +22,7 @@ public class MM1Network extends Network {
         node.link(nodeToSink);
     }
 
-    public void query(long threadId, Invocation invocation) {
+    public void query(long threadId, Invocation invocation, Param param) {
         Customer customer = new Customer(this, sim, Thread.currentThread().getId(), invocation);
         node.enter(customer);
     }

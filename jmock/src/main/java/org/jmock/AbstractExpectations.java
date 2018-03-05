@@ -5,6 +5,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.*;
 import org.jmock.api.Action;
 import org.jmock.internal.*;
+import org.jmock.internal.perf.Param;
 import org.jmock.lib.action.*;
 import org.jmock.syntax.*;
 
@@ -230,6 +231,10 @@ public abstract class AbstractExpectations implements ExpectationBuilder,
     
     public void will(Action action) {
         currentBuilder().setAction(action);
+    }
+
+    public void pass(Param param) {
+        currentBuilder().setParam(param);
     }
     
     /* Common constraints

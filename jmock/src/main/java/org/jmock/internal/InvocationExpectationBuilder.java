@@ -13,6 +13,7 @@ import org.jmock.api.Invocation;
 import org.jmock.internal.matcher.MethodNameMatcher;
 import org.jmock.internal.matcher.MockObjectMatcher;
 import org.jmock.internal.matcher.AllParametersMatcher;
+import org.jmock.internal.perf.Param;
 import org.jmock.syntax.MethodClause;
 import org.jmock.syntax.ParametersClause;
 import org.jmock.syntax.ReceiverClause;
@@ -54,6 +55,10 @@ public class InvocationExpectationBuilder
     public void setAction(Action action) {
         expectation.setAction(action);
         needsDefaultAction = false;
+    }
+
+    public void setParam(Param param) {
+        expectation.setParam(param);
     }
     
     public void addSideEffect(SideEffect sideEffect) {

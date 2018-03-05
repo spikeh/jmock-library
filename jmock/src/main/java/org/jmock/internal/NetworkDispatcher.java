@@ -1,6 +1,7 @@
 package org.jmock.internal;
 
 import org.jmock.api.Invocation;
+import org.jmock.internal.perf.Param;
 import org.jmock.internal.perf.PerformanceModel;
 import org.jmock.internal.perf.Sim;
 
@@ -53,7 +54,7 @@ public class NetworkDispatcher {
         aliveParentThreads = threads;
     }
 
-    public void query(Invocation invocation) {
+    public void query(Invocation invocation, Param param) {
         long threadId = Thread.currentThread().getId();
         String threadName = Thread.currentThread().getName();
         PerformanceModel model = models.get(invocation.getInvokedObject().toString());
@@ -61,7 +62,7 @@ public class NetworkDispatcher {
             return;
         }
         // need to know about thread's parent...
-        model.query(threadId, invocation);
+        model.query(threadId, invocation, param);
         // For the case of one A, the response time of A is the last exiting thread
         // For the case of multiple A, the response time of each A is the sum of all mocked calls
         //if (threadId > 1) {

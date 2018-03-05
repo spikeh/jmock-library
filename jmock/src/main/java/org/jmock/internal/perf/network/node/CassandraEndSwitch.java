@@ -21,6 +21,7 @@ public class CassandraEndSwitch extends CassandraNode {
         if (rt == CassandraRequestType.READ_LOCAL) {
             System.out.println(customer.uuid() + " " + customer.requestType() + " changed to READ_LOCAL_END");
             customer.setRequestType(CassandraRequestType.READ_LOCAL_END);
+            // TODO check isServiced here?
         }
         forward(customer);
     }

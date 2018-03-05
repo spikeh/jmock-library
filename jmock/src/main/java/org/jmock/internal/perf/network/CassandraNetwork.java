@@ -2,6 +2,7 @@ package org.jmock.internal.perf.network;
 
 import org.jmock.api.Invocation;
 import org.jmock.internal.perf.Delay;
+import org.jmock.internal.perf.Param;
 import org.jmock.internal.perf.Sim;
 import org.jmock.internal.perf.distribution.Deterministic;
 import org.jmock.internal.perf.network.adt.FIFOQueue;
@@ -49,6 +50,12 @@ public class CassandraNetwork extends Network {
         createNode(4);
     }
 
+    public static Param param(int rows) {
+        Param ret = new Param();
+        ret.addParameter("rows", rows);
+        return ret;
+    }
+
     private void createNode(int nodeId) {
         CassandraQueueingNode c_network = new CassandraNetworkNode(this, sim, String.format("c%d_network", nodeId), nodeId, 1, new FIFOQueue<CassandraCustomer>());
         networkList.add(c_network);
@@ -90,8 +97,12 @@ public class CassandraNetwork extends Network {
         c_end.link(c_end_link);
     }
 
-    public void query(long threadId, Invocation invocation) {
+    public void query(long threadId, Invocation invocation, Param param) {
         CassandraRequestType rt;
+        Integer foo = (Integer)param.getParameter("rows");
+        if (foo != null) {
+            System.out.println("Rows = " + foo);
+        }
 
         /*
         int mid = rng.nextInt(this.numContendedRequests + 1);
