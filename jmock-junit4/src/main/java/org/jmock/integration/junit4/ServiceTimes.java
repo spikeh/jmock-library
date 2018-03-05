@@ -2,6 +2,8 @@ package org.jmock.integration.junit4;
 
 import org.jmock.internal.perf.distribution.*;
 
+import java.io.IOException;
+
 public class ServiceTimes {
 
     public static Distribution exponential(double lambda) {
@@ -26,5 +28,9 @@ public class ServiceTimes {
 
     public static Distribution uniformDist(double min, double max) {
         return new Uniform(min, max);
+    }
+
+    public static Distribution alias(String filePath) throws IOException {
+        return new Alias(filePath);
     }
 }
