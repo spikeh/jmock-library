@@ -1,23 +1,39 @@
 package org.jmock.internal.perf.distribution;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 
-public class Alias implements Distribution {
-
+public class Alias implements Distribution, Serializable {
+    private static final long serialVersionUID = -2218446065547666620L;
     private int[] alias;
     private double[] probability;
     private Random random;
-    List<Double> vals = new ArrayList<>();
+    private List<Double> vals = new ArrayList<>();
 
     public Alias(String filePath) throws IOException {
         Path p = Paths.get(filePath);
         Charset cs = Charset.forName("ISO-8859-1");
         List<String> lines = Files.readAllLines(p, cs);
+        List<Double> probabilities = setProbabilities(lines);
+        load(probabilities);
+    }
+
+    public Alias(BufferedReader br) throws IOException {
+        List<String> lines = new ArrayList<>();
+        String line = br.readLine();
+        while (line != null) {
+            lines.add(line);
+            line = br.readLine();
+        }
+        List<Double> probabilities = setProbabilities(lines);
+        load(probabilities);
+    }
+
+    private List<Double> setProbabilities(List<String> lines) {
         int count = 0;
         List<Double> probabilities = new ArrayList<>();
         for (String l : lines) {
@@ -29,7 +45,7 @@ public class Alias implements Distribution {
             String[] split = l.split("\t");
             probabilities.add(Double.parseDouble(split[1]) / count);
         }
-        load(probabilities);
+        return probabilities;
     }
 
     private void load(List<Double> probabilities) {

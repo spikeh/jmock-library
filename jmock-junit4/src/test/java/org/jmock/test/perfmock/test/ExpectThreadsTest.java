@@ -6,6 +6,7 @@ import org.jmock.test.perfmock.example.ParallelProfileController;
 import org.jmock.test.perfmock.example.SocialGraph;
 import org.jmock.test.perfmock.example.User;
 import org.jmock.test.perfmock.example.UserDetailsService;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -25,6 +26,7 @@ public class ExpectThreadsTest {
     public PerformanceMockery context = new PerformanceMockery();
 
     @Test
+    @Ignore
     public void looksUpDetailsForEachFriend() {
         final SocialGraph socialGraph = context.mock(SocialGraph.class, exponential(0.05));
         final UserDetailsService userDetails = context.mock(UserDetailsService.class, exponential(0.03));
