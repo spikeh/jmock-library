@@ -5,8 +5,6 @@ import org.jmock.internal.perf.network.request.Customer;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import static java.util.Comparator.comparingDouble;
-
 public class OrderedQueue<T extends Customer> extends PriorityBlockingQueue<T> implements CappedQueue<T> {
     private int cap;
 
