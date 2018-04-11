@@ -62,6 +62,7 @@
 							<secretKeyring>${basedir}/secring.gpg</secretKeyring>
 							<publicKeyring>${basedir}/pubring.gpg</publicKeyring>
 							<passphrase>secret</passphrase>
+                            <skip>true</skip>
 						</configuration>
 					</execution>
 				</executions>
