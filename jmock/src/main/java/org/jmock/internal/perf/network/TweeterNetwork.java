@@ -10,7 +10,10 @@ import org.jmock.internal.perf.network.node.TweeterTableNode;
 import org.jmock.internal.perf.network.request.TweeterCustomer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

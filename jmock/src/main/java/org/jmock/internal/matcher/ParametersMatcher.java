@@ -1,10 +1,10 @@
 package org.jmock.internal.matcher;
 
-import java.util.List;
-
 import org.hamcrest.Matcher;
 import org.hamcrest.collection.IsArray;
 import org.hamcrest.core.IsEqual;
+
+import java.util.List;
 
 public class ParametersMatcher extends IsArray<Object> {
     public ParametersMatcher(Object[] expectedValues) {

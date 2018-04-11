@@ -1,14 +1,14 @@
 package org.jmock.auto.internal;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 import org.jmock.Mockery;
 import org.jmock.Sequence;
 import org.jmock.States;
 import org.jmock.auto.Auto;
 import org.jmock.auto.Mock;
 import org.jmock.internal.AllDeclaredFields;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 
 public class Mockomatic {

@@ -1,10 +1,10 @@
 package org.jmock.lib.action;
 
-import java.util.Arrays;
-
 import org.hamcrest.Description;
 import org.jmock.api.Action;
 import org.jmock.api.Invocation;
+
+import java.util.Arrays;
 
 /**
  * Performs multiple actions every time it is invoked.

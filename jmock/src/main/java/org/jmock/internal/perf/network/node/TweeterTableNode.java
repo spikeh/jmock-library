@@ -8,7 +8,9 @@ import org.jmock.internal.perf.distribution.Distribution;
 import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.request.TweeterCustomer;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 

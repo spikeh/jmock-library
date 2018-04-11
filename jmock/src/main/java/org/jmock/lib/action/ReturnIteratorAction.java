@@ -1,12 +1,12 @@
 package org.jmock.lib.action;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.hamcrest.Description;
 import org.jmock.api.Action;
 import org.jmock.api.Invocation;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Returns an {@link Iterator} over a collection.

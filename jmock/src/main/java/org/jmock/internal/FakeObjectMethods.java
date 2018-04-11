@@ -1,10 +1,10 @@
 package org.jmock.internal;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
 import org.jmock.api.Invocation;
 import org.jmock.api.Invokable;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 
 public abstract class FakeObjectMethods implements Invokable {

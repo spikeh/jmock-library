@@ -1,9 +1,9 @@
 package org.jmock.internal.perf.network.link;
 
-import org.jmock.internal.perf.network.request.CassandraCustomer;
-import org.jmock.internal.perf.network.request.CassandraRequestType;
 import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.node.Node;
+import org.jmock.internal.perf.network.request.CassandraCustomer;
+import org.jmock.internal.perf.network.request.CassandraRequestType;
 
 public class CassandraCPULink extends CassandraLink {
     private Node net;

@@ -1,8 +1,8 @@
 package org.jmock.internal.perf.network.link;
 
-import org.jmock.internal.perf.network.request.Customer;
 import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.node.Node;
+import org.jmock.internal.perf.network.request.Customer;
 
 public class Link<T extends Customer> {
     private final Network network;

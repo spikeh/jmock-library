@@ -1,9 +1,9 @@
 package org.jmock.internal.perf.network.node;
 
 import org.jmock.internal.perf.Sim;
-import org.jmock.internal.perf.network.request.Customer;
-import org.jmock.internal.perf.network.link.Link;
 import org.jmock.internal.perf.network.Network;
+import org.jmock.internal.perf.network.link.Link;
+import org.jmock.internal.perf.network.request.Customer;
 
 public class Node<T extends Customer> {
     protected final Network<T> network;

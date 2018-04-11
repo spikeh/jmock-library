@@ -1,11 +1,11 @@
 package org.jmock.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.hamcrest.Description;
 import org.jmock.Sequence;
 import org.jmock.api.Expectation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A sequence of expectations.

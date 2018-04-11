@@ -1,8 +1,8 @@
 package org.jmock.syntax;
 
-import java.lang.reflect.Method;
-
 import org.hamcrest.Matcher;
+
+import java.lang.reflect.Method;
 
 public interface MethodClause {
     ParametersClause method(Matcher<Method> methodMatcher);

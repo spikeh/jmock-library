@@ -1,12 +1,11 @@
 package org.jmock.lib.script;
 
-import org.hamcrest.Description;
-import org.jmock.api.Action;
-import org.jmock.api.Invocation;
-
 import bsh.EvalError;
 import bsh.Interpreter;
 import bsh.TargetError;
+import org.hamcrest.Description;
+import org.jmock.api.Action;
+import org.jmock.api.Invocation;
 
 /** 
  * <p>An {@link Action} that executes a <a href="http://www.beanshell.org">BeanShell</a> script.

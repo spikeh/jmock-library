@@ -3,11 +3,11 @@
  */
 package org.jmock.internal.matcher;
 
-import java.lang.reflect.Method;
-import java.util.regex.Pattern;
-
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
+
+import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 public class MethodNameMatcher extends TypeSafeMatcher<Method> {
     Pattern namePattern;

@@ -1,10 +1,10 @@
 package org.jmock.lib;
 
+import org.jmock.api.MockObjectNamingScheme;
+
 import static java.lang.Character.isLowerCase;
 import static java.lang.Character.isUpperCase;
 import static java.lang.Math.max;
-
-import org.jmock.api.MockObjectNamingScheme;
 
 /**
  * A naming scheme in which the implicit name for a mock object is

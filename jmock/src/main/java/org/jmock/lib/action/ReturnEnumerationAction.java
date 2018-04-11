@@ -1,14 +1,14 @@
 package org.jmock.lib.action;
 
-import static java.util.Collections.enumeration;
+import org.hamcrest.Description;
+import org.jmock.api.Action;
+import org.jmock.api.Invocation;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 
-import org.hamcrest.Description;
-import org.jmock.api.Action;
-import org.jmock.api.Invocation;
+import static java.util.Collections.enumeration;
 
 /**
  * Returns an {@link Enumeration} over a collection.

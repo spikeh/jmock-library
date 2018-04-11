@@ -1,22 +1,22 @@
 package org.jmock.internal;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.hamcrest.Matcher;
 import org.jmock.Sequence;
 import org.jmock.api.Action;
 import org.jmock.api.Expectation;
 import org.jmock.api.Invocation;
+import org.jmock.internal.matcher.AllParametersMatcher;
 import org.jmock.internal.matcher.MethodNameMatcher;
 import org.jmock.internal.matcher.MockObjectMatcher;
-import org.jmock.internal.matcher.AllParametersMatcher;
 import org.jmock.internal.perf.Param;
 import org.jmock.syntax.MethodClause;
 import org.jmock.syntax.ParametersClause;
 import org.jmock.syntax.ReceiverClause;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class InvocationExpectationBuilder 
     implements ExpectationCapture, 

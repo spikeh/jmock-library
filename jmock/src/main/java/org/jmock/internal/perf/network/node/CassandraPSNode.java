@@ -4,7 +4,7 @@ import org.jmock.internal.perf.Delay;
 import org.jmock.internal.perf.Event;
 import org.jmock.internal.perf.Sim;
 import org.jmock.internal.perf.distribution.Deterministic;
-import org.jmock.internal.perf.network.*;
+import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.adt.OrderedQueue;
 import org.jmock.internal.perf.network.request.CassandraConsistencyLevel;
 import org.jmock.internal.perf.network.request.CassandraCustomer;

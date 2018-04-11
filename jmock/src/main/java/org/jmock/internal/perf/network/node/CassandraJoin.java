@@ -1,10 +1,10 @@
 package org.jmock.internal.perf.network.node;
 
 import org.jmock.internal.perf.Sim;
+import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.request.CassandraConsistencyLevel;
 import org.jmock.internal.perf.network.request.CassandraCustomer;
 import org.jmock.internal.perf.network.request.CassandraRequestType;
-import org.jmock.internal.perf.network.Network;
 
 import java.util.HashMap;
 import java.util.Map;

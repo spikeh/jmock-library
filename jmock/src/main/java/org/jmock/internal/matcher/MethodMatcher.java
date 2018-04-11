@@ -1,9 +1,9 @@
 package org.jmock.internal.matcher;
 
-import java.lang.reflect.Method;
-
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
+
+import java.lang.reflect.Method;
 
 public class MethodMatcher extends TypeSafeMatcher<Method> {
     private Method expectedMethod;

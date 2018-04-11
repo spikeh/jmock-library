@@ -2,15 +2,15 @@
  */
 package org.jmock.api;
 
+import org.hamcrest.Description;
+import org.hamcrest.SelfDescribing;
+import org.hamcrest.StringDescription;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.hamcrest.Description;
-import org.hamcrest.SelfDescribing;
-import org.hamcrest.StringDescription;
 
 
 /**

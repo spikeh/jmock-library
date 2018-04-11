@@ -1,9 +1,5 @@
 package org.jmock.lib.concurrent;
 
-import static org.hamcrest.StringDescription.asString;
-
-import java.util.concurrent.TimeoutException;
-
 import org.jmock.api.Invocation;
 import org.jmock.api.Invokable;
 import org.jmock.api.ThreadingPolicy;
@@ -12,6 +8,10 @@ import org.jmock.lib.concurrent.internal.FixedTimeout;
 import org.jmock.lib.concurrent.internal.InfiniteTimeout;
 import org.jmock.lib.concurrent.internal.Timeout;
 import org.junit.Assert;
+
+import java.util.concurrent.TimeoutException;
+
+import static org.hamcrest.StringDescription.asString;
 
 
 /**

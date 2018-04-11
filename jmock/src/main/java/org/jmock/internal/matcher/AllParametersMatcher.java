@@ -1,14 +1,14 @@
 package org.jmock.internal.matcher;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.core.IsEqual;
 import org.jmock.internal.ParametersMatcher;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class AllParametersMatcher extends TypeSafeDiagnosingMatcher<Object[]>  implements ParametersMatcher {
     private final Matcher<Object>[] elementMatchers;

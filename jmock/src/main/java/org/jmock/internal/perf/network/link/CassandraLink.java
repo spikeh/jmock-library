@@ -1,8 +1,8 @@
 package org.jmock.internal.perf.network.link;
 
-import org.jmock.internal.perf.network.request.CassandraCustomer;
 import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.node.Node;
+import org.jmock.internal.perf.network.request.CassandraCustomer;
 
 public class CassandraLink extends Link<CassandraCustomer> {
     private final int nodeId;
