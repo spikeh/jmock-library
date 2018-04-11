@@ -6,6 +6,7 @@ import org.jmock.test.perfmock.example.ParallelProfileController;
 import org.jmock.test.perfmock.example.SocialGraph;
 import org.jmock.test.perfmock.example.User;
 import org.jmock.test.perfmock.example.UserDetailsService;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ import static org.jmock.integration.junit4.ServiceTimes.exponential;
 import static org.jmock.internal.perf.stats.PerfStatistics.hasPercentile;
 import static org.junit.Assert.assertThat;
 
-public class ExpectThreadsTest {
+public class ExpectThreadsWithRepeatsTest {
     static final long USER_ID = 1111L;
     static final List<Long> FRIEND_IDS = Arrays.asList(2222L, 3333L, 4444L, 5555L);
 
@@ -25,21 +26,24 @@ public class ExpectThreadsTest {
     public PerformanceMockery context = new PerformanceMockery();
 
     @Test
+    @Ignore
     public void looksUpDetailsForEachFriend() {
         final SocialGraph socialGraph = context.mock(SocialGraph.class, exponential(0.05));
         final UserDetailsService userDetails = context.mock(UserDetailsService.class, exponential(0.03));
-        context.expectThreads(2, new Runnable() {
-            @Override
-            public void run() {
-                context.checking(new Expectations() {{
-                    exactly(1).of(socialGraph).query(USER_ID);
-                    will(returnValue(FRIEND_IDS));
-                    exactly(4).of(userDetails).lookup(with(any(Long.class)));
-                    will(returnValue(new User()));
-                }});
+        context.repeat(100, () -> {
+            context.expectThreads(2, new Runnable() {
+                @Override
+                public void run() {
+                    context.checking(new Expectations() {{
+                        exactly(1).of(socialGraph).query(USER_ID);
+                        will(returnValue(FRIEND_IDS));
+                        exactly(4).of(userDetails).lookup(with(any(Long.class)));
+                        will(returnValue(new User()));
+                    }});
 
-                new ParallelProfileController(socialGraph, userDetails).lookUpFriends(USER_ID);
-            }
+                    new ParallelProfileController(socialGraph, userDetails).lookUpFriends(USER_ID);
+                }
+            });
         });
 
         assertThat(context.runtimes(), hasPercentile(80, lessThan(800.0)));
