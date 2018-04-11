@@ -13,11 +13,21 @@ import org.jmock.internal.perf.network.ISNetwork;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     static final Map<Long, List<Long>> parentThreads = Collections.synchronizedMap(new HashMap<Long, List<Long>>());
@@ -412,8 +422,6 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     }
 
     private void writeHtml(FrameworkMethod method) {
-        /*
-        
         //String tmpDir = System.getProperty("java.io.tmpdir");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
         Path dirPath = Paths.get("target", dtf.format(LocalDateTime.now()));
@@ -438,8 +446,6 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        */
     }
 
     @Override
