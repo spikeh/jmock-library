@@ -28,6 +28,7 @@ public class ExpectThreadsTest {
     public void looksUpDetailsForEachFriend() {
         final SocialGraph socialGraph = context.mock(SocialGraph.class, exponential(0.05));
         final UserDetailsService userDetails = context.mock(UserDetailsService.class, exponential(0.03));
+        context.enableDebug();
         context.expectThreads(2, new Runnable() {
             @Override
             public void run() {

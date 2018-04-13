@@ -1,6 +1,7 @@
 package org.jmock.test.perfmock.example;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -37,6 +38,27 @@ public class ParallelProfileController {
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public void lookUpFriendsThread(long userId) {
+        List<Long> friendIds = socialGraph.query(userId);
+
+        CountDownLatch doneSignal = new CountDownLatch(4);
+        List<User> friends = Collections.synchronizedList(new ArrayList<>());
+
+        for (final Long friend : friendIds) {
+            Thread t = new Thread(() -> {
+                friends.add(userDetailsService.lookup(friend));
+                doneSignal.countDown();
+            });
+            t.start();
+        }
+
+        try {
+            doneSignal.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

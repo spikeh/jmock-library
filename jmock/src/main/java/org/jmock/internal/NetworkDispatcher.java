@@ -5,21 +5,19 @@ import org.jmock.internal.perf.Param;
 import org.jmock.internal.perf.PerformanceModel;
 import org.jmock.internal.perf.Sim;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NetworkDispatcher {
     public static final Map<Long, List<Long>> parentThreads = Collections.synchronizedMap(new HashMap<Long, List<Long>>());
     public static final Map<Long, Long> childToParentMap = Collections.synchronizedMap(new HashMap<Long, Long>());
+    public static final List<String> allChildNames = Collections.synchronizedList(new ArrayList<String>());
     private final Sim sim;
     private final Semaphore mockerySemaphore;
     private final Map<String, PerformanceModel> models = Collections.synchronizedMap(new HashMap<String, PerformanceModel>());
     private final Map<Long, Semaphore> threadSemaphores = Collections.synchronizedMap(new HashMap<Long, Semaphore>());
-    private final AtomicInteger threadsInQuery = new AtomicInteger();
+    private final AtomicInteger childrenInQuery = new AtomicInteger();
     private final AtomicInteger parentsInQuery = new AtomicInteger();
     private AtomicInteger aliveChildThreads;
     private AtomicInteger aliveParentThreads;
@@ -66,25 +64,21 @@ public class NetworkDispatcher {
         // For the case of one A, the response time of A is the last exiting thread
         // For the case of multiple A, the response time of each A is the sum of all mocked calls
         //if (threadId > 1) {
-        if (threadName.startsWith("PerfMock")) {
+        if (threadName.startsWith("PerfMockery") || allChildNames.contains(threadName)) {
             Semaphore currentThreadSemaphore = threadSemaphores.get(threadId);
             if (currentThreadSemaphore == null) {
-                currentThreadSemaphore = threadSemaphores.put(threadId, new Semaphore(0));
+                currentThreadSemaphore = new Semaphore(0);
+                threadSemaphores.put(threadId, currentThreadSemaphore);
             }
-
             if (parentThreads.containsKey(threadId)) {
                 try {
-                    int currentParentsInQuery = parentsInQuery.incrementAndGet();
-                    if (currentParentsInQuery == aliveParentThreads.get()) {
-                        if (debug) {
-                            System.out.println("PARENT Thread " + threadId + " in query() going to wake main thread");
-                        }
+                    int current = parentsInQuery.incrementAndGet();
+                    if (current == aliveParentThreads.get()) {
+                        debugPrint("Parent threadId = " + threadId + " in query() going to wake main thread");
                         mockerySemaphore.release();
                         currentThreadSemaphore.acquire();
                     } else {
-                        if (debug) {
-                            System.out.println("PARENT Thread " + threadId + " in query() going to sleep");
-                        }
+                        debugPrint("Parent threadId = " + threadId + " in query() going to sleep");
                         currentThreadSemaphore.acquire();
                     }
                 } catch (InterruptedException e) {
@@ -93,26 +87,20 @@ public class NetworkDispatcher {
                 parentsInQuery.decrementAndGet();
             } else {
                 try {
-                    int currentThreadsInQuery = threadsInQuery.incrementAndGet();
-                    if (debug) {
-                        System.out.println("CHILD Thread " + threadId + " currentThreadsInQuery = " + currentThreadsInQuery + ", aliveChildThreads = " + aliveChildThreads.get());
-                    }
-                    if (currentThreadsInQuery == aliveChildThreads.get()) {
-                        if (debug) {
-                            System.out.println("CHILD Thread " + threadId + " in query() going to wake main thread");
-                        }
+                    int current = childrenInQuery.incrementAndGet();
+                    debugPrint("Child threadId = " + threadId + " in query(), current = " + current + ", alive = " + aliveChildThreads.get());
+                    if (current == aliveChildThreads.get()) {
+                        debugPrint("Child threadId = " + threadId + " in query() going to wake main thread");
                         mockerySemaphore.release();
                         currentThreadSemaphore.acquire();
                     } else {
-                        if (debug) {
-                            System.out.println("CHILD Thread " + threadId + " in query() going to sleep");
-                        }
+                        debugPrint("Child threadId = " + threadId + " in query() going to sleep");
                         currentThreadSemaphore.acquire();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                threadsInQuery.decrementAndGet();
+                childrenInQuery.decrementAndGet();
             }
         } else {
             sim.runOnce();
@@ -121,5 +109,11 @@ public class NetworkDispatcher {
 
     public void enableDebug() {
         this.debug = true;
+    }
+
+    private void debugPrint(String msg) {
+        if (debug) {
+            System.out.println(msg);
+        }
     }
 }

@@ -104,6 +104,7 @@ public class Sim {
     public Long runOnce() {
         while (!diary.isEmpty()) {
             Event<? extends Customer> e = diary.poll();
+            assert(e != null);
             Customer customer = e.getEventObject();
             currentVTime = e.invokeTime();
             boolean stop = e.invoke();
