@@ -27,6 +27,7 @@ public class BasicTest {
     public void looksUpDetailsForEachFriend() {
         final SocialGraph socialGraph = context.mock(SocialGraph.class, constant(200));
         final UserDetailsService userDetails = context.mock(UserDetailsService.class, constant(100));
+        context.enableDebug();
 
         context.checking(new Expectations() {{
             exactly(1).of(socialGraph).query(USER_ID);

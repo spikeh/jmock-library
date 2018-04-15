@@ -28,8 +28,6 @@ public class Sim {
     private final ThreadMXBean mxBean = ManagementFactory.getThreadMXBean();
 
     private double currentVTime = 0.0;
-    private boolean init = false;
-    private boolean isActive = false;
 
     public double now() {
         return currentVTime;
@@ -58,23 +56,14 @@ public class Sim {
         diary.remove(e);
     }
 
-    public void init() {
-        init = true;
-    }
-
     public void start() {
-        if (!init)
-            return;
         long threadId = Thread.currentThread().getId();
         if (!foo.containsKey(threadId)) {
             foo.put(threadId, mxBean.getThreadCpuTime(threadId));
-            isActive = true;
         }
     }
 
     public void stop() {
-        if (!init)
-            return;
         long threadId = Thread.currentThread().getId();
         long now = mxBean.getThreadCpuTime(threadId);
         Long prev = foo.get(threadId);
@@ -86,12 +75,7 @@ public class Sim {
                 bar.put(threadId, (now - prev));
             }
             foo.remove(threadId);
-            isActive = false;
         }
-    }
-
-    public boolean isActive() {
-        return isActive;
     }
 
     public long testGet() {
@@ -159,7 +143,5 @@ public class Sim {
         foo.clear();
         bar.clear();
         currentVTime = 0.0;
-        init = false;
-        isActive = false;
     }
 }

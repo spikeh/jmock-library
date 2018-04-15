@@ -138,16 +138,16 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     }
 
     private void childEndCallback() {
-        debugPrint("Thread " + Thread.currentThread().getId() + " childEndCallback()");
-        aliveChildThreads.decrementAndGet();
+        int alive = aliveChildThreads.decrementAndGet();
+        debugPrint("Thread " + Thread.currentThread().getId() + " childEndCallback(), alive = " + alive);
         threadCompleteSignal.countDown();
         mockerySemaphore.release();
     }
 
     private void parentEndCallback() {
-        debugPrint("Thread " + Thread.currentThread().getId() + " parentEndCallback()");
         threadResponseTimes.add(sim.finalThreadResponseTime());
-        aliveParentThreads.decrementAndGet();
+        int alive = aliveParentThreads.decrementAndGet();
+        debugPrint("Thread " + Thread.currentThread().getId() + " parentEndCallback(), alive = " + alive);
         threadCompleteSignal.countDown();
         mockerySemaphore.release();
     }
@@ -167,23 +167,6 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     }
 
     public void repeat(int times, final Runnable test) {
-        // need to warmup here for a bit...
-        for (int i = 0; i < 10; i++) {
-            test.run();
-            sim.stop();
-            mockerySemaphore.drainPermits();
-            concurrentTest = false;
-            threadedTest = false;
-            if (threadResponseTimes.size() == i) {
-                threadResponseTimes.add(sim.finalThreadResponseTime());
-                sim.resetCurrentThread();
-            }
-        }
-        sim.reset();
-        threadResponseTimes.clear();
-
-
-        sim.init();
         for (int i = 0; i < times; i++) {
             test.run();
             sim.stop();
@@ -396,7 +379,7 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
                 public void run() {
                     try {
                         startSignal.await();
-                        expectedChildThreads.set(expectedThreads);
+                        expectedChildThreads.set(expectedThreads + 1);
                         testScenario.run();
                         assertIsSatisfied();
                         parentEndCallback();

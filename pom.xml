@@ -62,6 +62,7 @@
         <module>jmock-legacy</module>
         <module>jmock-example</module>
         <module>perfmock-instrumenter</module>
+        <module>perfmock-models</module>
     </modules>
 
     <build>
