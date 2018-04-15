@@ -132,10 +132,6 @@ public class Sim {
         //currentVTime = 0.0;
     }
 
-    public void flushEvents() {
-
-    }
-
     public void reset() {
         diary.clear();
         perThreadEntryTime.clear();

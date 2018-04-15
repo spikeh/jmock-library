@@ -66,7 +66,6 @@ public class TweeterTableNode extends Node<TweeterCustomer> {
 
         public boolean invoke() {
             int clients = tweeterModel.getRequests(eventObject.arrivalTime(), invokeTime);
-            System.out.println("<!> clients = " + clients + " when invoking TweeterTableNode event");
             Delay delay = delayMap.get(clients);
             if (delay == null) {
                 try {

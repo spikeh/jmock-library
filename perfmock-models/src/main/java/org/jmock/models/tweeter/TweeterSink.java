@@ -30,7 +30,6 @@ public class TweeterSink extends Sink<TweeterCustomer> {
 
         public boolean invoke() {
             network.registerCompletion(eventObject);
-            System.out.println("Removing " + eventObject);
             model.removeCustomer(eventObject);
             return eventObject.invocation() != null;
         }
