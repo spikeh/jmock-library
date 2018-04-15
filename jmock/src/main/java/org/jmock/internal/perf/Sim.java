@@ -23,8 +23,8 @@ public class Sim {
     private final Map<Long, Double> perThreadEntryTime = new HashMap<>();
     private final Map<Long, Double> perThreadExitTime = new HashMap<>();
 
-    private final Map<Long, Long> foo = new HashMap<>();
-    private final Map<Long, Long> bar = new HashMap<>();
+    private final Map<Long, Long> threadPrevCpuTime = new HashMap<>();
+    private final Map<Long, Long> threadSumCpuTime = new HashMap<>();
     private final ThreadMXBean mxBean = ManagementFactory.getThreadMXBean();
 
     private double currentVTime = 0.0;
@@ -58,30 +58,30 @@ public class Sim {
 
     public void start() {
         long threadId = Thread.currentThread().getId();
-        if (!foo.containsKey(threadId)) {
-            foo.put(threadId, mxBean.getThreadCpuTime(threadId));
+        if (!threadPrevCpuTime.containsKey(threadId)) {
+            threadPrevCpuTime.put(threadId, mxBean.getThreadCpuTime(threadId));
         }
     }
 
     public void stop() {
         long threadId = Thread.currentThread().getId();
         long now = mxBean.getThreadCpuTime(threadId);
-        Long prev = foo.get(threadId);
+        Long prev = threadPrevCpuTime.get(threadId);
         if (prev != null) {
-            if (bar.containsKey(threadId)) {
-                long sum = bar.get(threadId);
-                bar.put(threadId, sum + (now - prev));
+            if (threadSumCpuTime.containsKey(threadId)) {
+                long sum = threadSumCpuTime.get(threadId);
+                threadSumCpuTime.put(threadId, sum + (now - prev));
             } else {
-                bar.put(threadId, (now - prev));
+                threadSumCpuTime.put(threadId, (now - prev));
             }
-            foo.remove(threadId);
+            threadPrevCpuTime.remove(threadId);
         }
     }
 
-    public long testGet() {
+    public long getCurrentThreadTotalCpuTime() {
         long threadId = Thread.currentThread().getId();
-        long res = bar.get(threadId);
-        bar.remove(threadId);
+        long res = threadSumCpuTime.get(threadId);
+        threadSumCpuTime.remove(threadId);
         return res;
     }
 
@@ -140,8 +140,8 @@ public class Sim {
         diary.clear();
         perThreadEntryTime.clear();
         perThreadExitTime.clear();
-        foo.clear();
-        bar.clear();
+        threadPrevCpuTime.clear();
+        threadSumCpuTime.clear();
         currentVTime = 0.0;
     }
 }

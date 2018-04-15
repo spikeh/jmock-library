@@ -176,7 +176,7 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
             threadedTest = false;
             // For the case of repeat but not runConcurrent
             if (threadResponseTimes.size() == i) {
-                long nanoTime = sim.testGet();
+                long nanoTime = sim.getCurrentThreadTotalCpuTime();
                 threadResponseTimes.add(sim.finalThreadResponseTime() + ((double)nanoTime/1000000));
                 sim.resetCurrentThread();
             }
