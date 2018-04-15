@@ -41,7 +41,6 @@ import static org.junit.Assert.fail;
 
 public class JUnitRuleMockery extends JUnit4Mockery implements MethodRule {
     private final Mockomatic mockomatic = new Mockomatic(this);
-    final List<Double> threadResponseTimes = Collections.synchronizedList(new ArrayList<Double>());
 
     public Statement apply(final Statement base, final FrameworkMethod method, final Object target) {
         return new Statement() {
@@ -84,8 +83,4 @@ public class JUnitRuleMockery extends JUnit4Mockery implements MethodRule {
     }
 
     public void doExtraStuff(FrameworkMethod method) {}
-
-    public List<Double> runtimes() {
-        return threadResponseTimes;
-    }
 }

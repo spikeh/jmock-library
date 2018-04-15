@@ -45,6 +45,6 @@ public class TestTest {
             }
         });
 
-        assertThat(context.runtimes(), hasMean(lessThan(601.0)));
+        assertThat(context.runtimes(), hasMean(lessThan(605.0)));
     }
 }

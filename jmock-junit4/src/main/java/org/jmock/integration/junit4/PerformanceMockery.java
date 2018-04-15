@@ -67,6 +67,7 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     private boolean concurrentTest;
     private boolean threadedTest;
     private boolean debug = false;
+    private final List<Double> threadResponseTimes = Collections.synchronizedList(new ArrayList<Double>());
 
     /* Used in multi-threaded tests to check that the correct number of threads were created.
      * Checks for too many.
@@ -452,5 +453,9 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
 
     public double runtime() {
         return sim.finalThreadResponseTime();
+    }
+
+    public List<Double> runtimes() {
+        return threadResponseTimes;
     }
 }
