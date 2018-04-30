@@ -2,6 +2,7 @@ package org.jmock.models.tweeter;
 
 import org.jmock.api.Invocation;
 import org.jmock.internal.perf.Sim;
+import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.request.Customer;
 
 public class TweeterCustomer extends Customer {
@@ -9,11 +10,9 @@ public class TweeterCustomer extends Customer {
     private String query;
     private String table;
     private Integer clients;
-    private TweeterModel network;
 
-    public TweeterCustomer(TweeterModel network, Sim sim, long threadId, Invocation invocation, String cmd, String query, String table, Integer clients) {
+    public TweeterCustomer(Network network, Sim sim, long threadId, Invocation invocation, String cmd, String query, String table, Integer clients) {
         super(network, sim, threadId, invocation);
-        this.network = network;
         this.cmd = cmd;
         this.query = query;
         this.table = table;

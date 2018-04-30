@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.number.OrderingComparison.lessThan;
-import static org.jmock.integration.junit4.ServiceTimes.exponential;
+import static org.jmock.integration.junit4.ServiceTimes.exponentialDist;
 import static org.jmock.internal.perf.stats.PerfStatistics.hasPercentile;
 import static org.junit.Assert.assertThat;
 
@@ -28,8 +28,8 @@ public class ExpectThreadsWithRepeatsTest {
     @Test
     @Ignore
     public void looksUpDetailsForEachFriend() {
-        final SocialGraph socialGraph = context.mock(SocialGraph.class, exponential(0.05));
-        final UserDetailsService userDetails = context.mock(UserDetailsService.class, exponential(0.03));
+        final SocialGraph socialGraph = context.mock(SocialGraph.class, exponentialDist(0.05));
+        final UserDetailsService userDetails = context.mock(UserDetailsService.class, exponentialDist(0.03));
         context.repeat(100, () -> {
             context.expectThreads(2, new Runnable() {
                 @Override

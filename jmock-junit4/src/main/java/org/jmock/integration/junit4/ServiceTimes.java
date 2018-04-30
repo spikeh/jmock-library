@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class ServiceTimes {
 
-    public static Distribution exponential(double lambda) {
-        return new Exp(lambda);
+    public static Distribution exponentialDist(double mean) {
+        return new Exp(1 / mean);
     }
 
     public static Distribution constant(double value) {

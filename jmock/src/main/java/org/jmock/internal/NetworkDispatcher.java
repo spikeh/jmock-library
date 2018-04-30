@@ -60,7 +60,7 @@ public class NetworkDispatcher {
             return;
         }
         // need to know about thread's parent...
-        model.query(threadId, invocation, param);
+        model.schedule(threadId, invocation, param);
         // For the case of one A, the response time of A is the last exiting thread
         // For the case of multiple A, the response time of each A is the sum of all mocked calls
         //if (threadId > 1) {
@@ -74,11 +74,11 @@ public class NetworkDispatcher {
                 try {
                     int current = parentsInQuery.incrementAndGet();
                     if (current == aliveParentThreads.get()) {
-                        debugPrint("Parent threadId = " + threadId + " in query() going to wake main thread");
+                        debugPrint("Parent threadId = " + threadId + " in schedule() going to wake main thread");
                         mockerySemaphore.release();
                         currentThreadSemaphore.acquire();
                     } else {
-                        debugPrint("Parent threadId = " + threadId + " in query() going to sleep");
+                        debugPrint("Parent threadId = " + threadId + " in schedule() going to sleep");
                         currentThreadSemaphore.acquire();
                     }
                 } catch (InterruptedException e) {
@@ -88,13 +88,13 @@ public class NetworkDispatcher {
             } else {
                 try {
                     int current = childrenInQuery.incrementAndGet();
-                    debugPrint("Child threadId = " + threadId + " in query(), current = " + current + ", alive = " + aliveChildThreads.get());
+                    debugPrint("Child threadId = " + threadId + " in schedule(), current = " + current + ", alive = " + aliveChildThreads.get());
                     if (current == aliveChildThreads.get()) {
-                        debugPrint("Child threadId = " + threadId + " in query() going to wake main thread");
+                        debugPrint("Child threadId = " + threadId + " in schedule() going to wake main thread");
                         mockerySemaphore.release();
                         currentThreadSemaphore.acquire();
                     } else {
-                        debugPrint("Child threadId = " + threadId + " in query() going to sleep");
+                        debugPrint("Child threadId = " + threadId + " in schedule() going to sleep");
                         currentThreadSemaphore.acquire();
                     }
                 } catch (InterruptedException e) {

@@ -22,7 +22,7 @@ public class MM1Network extends Network {
         node.link(nodeToSink);
     }
 
-    public void query(long threadId, Invocation invocation, Param param) {
+    public void schedule(long threadId, Invocation invocation, Param param) {
         Customer customer = new Customer(this, sim, Thread.currentThread().getId(), invocation);
         node.enter(customer);
     }

@@ -1,29 +1,32 @@
-package org.jmock.internal.perf.network;
+package org.jmock.models.tweeter;
 
 import org.jmock.api.Invocation;
+import org.jmock.integration.junit4.PerformanceMockery;
 import org.jmock.internal.perf.Delay;
 import org.jmock.internal.perf.Param;
-import org.jmock.internal.perf.Sim;
+import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.link.Link;
 import org.jmock.internal.perf.network.node.InfiniteServerNode;
 import org.jmock.internal.perf.network.node.Node;
 import org.jmock.internal.perf.network.node.Sink;
 import org.jmock.internal.perf.network.request.Customer;
 
-public class ISNetwork extends Network {
-    private final Node<Customer> node;
+public class PaperCassandraUserServiceModel extends Network<Customer> {
+
+    private final Node<Customer> getByUsernameNode;
     private final Sink<Customer> sink;
 
-    public ISNetwork(Sim sim, Delay delay) {
-        super(sim);
-        this.node = new InfiniteServerNode<>(this, sim, "ISNode", delay);
+    public PaperCassandraUserServiceModel(String fig) {
+        super(PerformanceMockery.INSTANCE.sim());
+        this.getByUsernameNode = new InfiniteServerNode<>(this, sim, "ISNode", new Delay(new RandomEmpiricalDistribution(fig + "_getRandomUser.txt")));
         this.sink = new Sink<>(this, sim);
         Link<Customer> nodeToSink = new Link<>(this, sink);
-        node.link(nodeToSink);
+        getByUsernameNode.link(nodeToSink);
     }
 
+    @Override
     public void schedule(long threadId, Invocation invocation, Param param) {
         Customer customer = new Customer(this, sim, Thread.currentThread().getId(), invocation);
-        node.enter(customer);
+        getByUsernameNode.enter(customer);
     }
 }

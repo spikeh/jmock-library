@@ -15,7 +15,7 @@ public class PerfStatistics {
         return new TypeSafeMatcher<List<Double>>() {
             @Override
             protected boolean matchesSafely(List<Double> doubles) {
-                System.out.println(percentile(i, doubles));
+                System.out.println("Percentile: " + percentile(i, doubles));
                 return percentileCheck.matches(percentile(i, doubles));
             }
 

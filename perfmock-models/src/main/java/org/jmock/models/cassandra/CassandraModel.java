@@ -98,7 +98,7 @@ public class CassandraModel extends Network {
         c_end.link(c_end_link);
     }
 
-    public void query(long threadId, Invocation invocation, Param param) {
+    public void schedule(long threadId, Invocation invocation, Param param) {
         CassandraRequestType rt;
         Integer foo = (Integer)param.getParameter("rows");
         if (foo != null) {

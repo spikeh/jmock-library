@@ -3,7 +3,6 @@ package org.jmock.models.tweeter;
 import org.jmock.api.Invocation;
 import org.jmock.integration.junit4.PerformanceMockery;
 import org.jmock.internal.perf.Param;
-import org.jmock.internal.perf.Sim;
 import org.jmock.internal.perf.network.Network;
 import org.jmock.internal.perf.network.link.Link;
 import org.jmock.internal.perf.network.node.Sink;
@@ -12,17 +11,19 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TweeterModel extends Network<TweeterCustomer> {
+public class PaperTweeterModel extends Network<TweeterCustomer> {
     private static List<String> tables = Arrays.asList("followers-all", "followers-count", "follows-all", "follows-count", "messages", "messages_empty", "users_by_username", "replies");
+    private String testName;
     private Sink<TweeterCustomer> sink;
-    private Map<String, TweeterTableNode> nodeMap = new HashMap<>();
+    private Map<String, PaperTweeterTableNode> nodeMap = new HashMap<>();
     private final List<TweeterCustomer> queuedCustomers = Collections.synchronizedList(new ArrayList<TweeterCustomer>());
 
-    public TweeterModel() {
+    public PaperTweeterModel(String testName) {
         super(PerformanceMockery.INSTANCE.sim());
-        this.sink = new TweeterSink(this, sim);
+        this.testName = testName;
+        this.sink = new PaperTweeterSink(this, sim);
         for (String tableName : tables) {
-            TweeterTableNode node = new TweeterTableNode(this, sim, tableName);
+            PaperTweeterTableNode node = new PaperTweeterTableNode(this, sim, tableName, testName);
             nodeMap.put(tableName, node);
             Link<TweeterCustomer> nodeToSink = new Link<>(this, sink);
             node.link(nodeToSink);
@@ -48,18 +49,18 @@ public class TweeterModel extends Network<TweeterCustomer> {
         }
         TweeterCustomer customer = null;
         if (tables.contains(table)) {
-            TweeterTableNode node = nodeMap.get(table);
+            PaperTweeterTableNode node = nodeMap.get(table);
             customer = new TweeterCustomer(this, sim, Thread.currentThread().getId(), invocation, cmd, query, table, i);
             node.enter(customer);
         } else if (table.equals("followers") || table.equals("follows")) {
             customer = new TweeterCustomer(this, sim, Thread.currentThread().getId(), invocation, cmd, query, table, i);
             if (cmd.equals("*")) {
                 String appendedTable = table + "-all";
-                TweeterTableNode node = nodeMap.get(appendedTable);
+                PaperTweeterTableNode node = nodeMap.get(appendedTable);
                 node.enter(customer);
             } else if (cmd.startsWith("count")) {
                 String appendedTable = table + "-count";
-                TweeterTableNode node = nodeMap.get(appendedTable);
+                PaperTweeterTableNode node = nodeMap.get(appendedTable);
                 node.enter(customer);
             }
         } else {

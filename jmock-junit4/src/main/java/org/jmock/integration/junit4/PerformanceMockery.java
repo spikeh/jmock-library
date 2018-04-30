@@ -448,7 +448,7 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
         if (threadResponseTimes.isEmpty()) {
             threadResponseTimes.add(sim.finalThreadResponseTime());
         }
-        System.out.println(threadResponseTimes);
+        //System.out.println(threadResponseTimes);
         writeHtml(method);
     }
 
@@ -458,5 +458,17 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
 
     public List<Double> runtimes() {
         return threadResponseTimes;
+    }
+
+    public double mean() {
+        if (threadResponseTimes.size() > 0) {
+            Double sum = 0.0;
+            for (Double d : threadResponseTimes) {
+                sum += d;
+            }
+            return sum / threadResponseTimes.size();
+        } else {
+            return 0.0;
+        }
     }
 }

@@ -37,7 +37,7 @@ public class CPUNetwork extends Network {
         disk2.link(new Link<>(this, psNode));
     }
 
-    public void query(long threadId, Invocation invocation, Param param) {
+    public void schedule(long threadId, Invocation invocation, Param param) {
         Customer customer = new Customer(this, sim, Thread.currentThread().getId(), invocation);
         psNode.enter(customer);
     }
