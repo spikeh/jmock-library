@@ -1,5 +1,6 @@
 package org.jmock.integration.junit4;
 
+import org.apache.commons.math3.distribution.RealDistribution;
 import org.jmock.agent.PerfMockInstrumenter;
 import org.jmock.agent.ThreadConsumer;
 import org.jmock.internal.ExpectationBuilder;

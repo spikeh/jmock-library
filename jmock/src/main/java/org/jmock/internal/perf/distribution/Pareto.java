@@ -1,20 +1,21 @@
 package org.jmock.internal.perf.distribution;
 
-public class Pareto implements Distribution {
-    private final double k;
-    private final double alpha;
+import org.apache.commons.math3.distribution.ParetoDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 
-    public Pareto() {
-        this(1, 1);
-    }
+public class Pareto implements Distribution {
+    private final RealDistribution pareto;
 
     public Pareto(double scale, double shape) {
-        this.k = scale;
-        this.alpha = shape;
+        pareto = new ParetoDistribution(scale, shape);
     }
 
     public double sample() {
-        double n = Math.random();
-        return k / Math.pow(n, 1 / alpha);
+        return pareto.sample();
+    }
+
+    @Override
+    public RealDistribution getDistribution() {
+        return pareto;
     }
 }

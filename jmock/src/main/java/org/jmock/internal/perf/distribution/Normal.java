@@ -1,19 +1,21 @@
 package org.jmock.internal.perf.distribution;
 
-import java.util.Random;
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 
 public class Normal implements Distribution {
-    private final Random random;
-    private double mean;
-    private double stdev;
+    private final RealDistribution normal;
 
     public Normal(double mean, double stdev) {
-        this.mean = mean;
-        this.stdev = stdev;
-        this.random = new Random();
+        normal = new NormalDistribution(mean, stdev);
     }
 
     public double sample() {
-        return random.nextGaussian() * stdev + mean;
+        return normal.sample();
+    }
+
+    @Override
+    public RealDistribution getDistribution() {
+        return normal;
     }
 }

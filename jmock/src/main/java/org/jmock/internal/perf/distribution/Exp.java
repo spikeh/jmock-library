@@ -1,10 +1,13 @@
 package org.jmock.internal.perf.distribution;
 
+import org.apache.commons.math3.distribution.ExponentialDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
+
 public class Exp implements Distribution {
-    private final double rate;
+    private final RealDistribution exp;
 
     public Exp(double rate) {
-        this.rate = rate;
+        exp = new ExponentialDistribution(rate);
     }
 
     public static double exp(double rate) {
@@ -12,6 +15,11 @@ public class Exp implements Distribution {
     }
 
     public double sample() {
-        return -Math.log(Math.random()) / rate;
+        return exp.sample();
+    }
+
+    @Override
+    public RealDistribution getDistribution() {
+        return exp;
     }
 }

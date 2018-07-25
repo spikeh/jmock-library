@@ -1,21 +1,21 @@
 package org.jmock.internal.perf.distribution;
 
-public class Uniform implements Distribution {
-    private final double lower;
-    private final double upper;
+import org.apache.commons.math3.distribution.RealDistribution;
+import org.apache.commons.math3.distribution.UniformRealDistribution;
 
-    public Uniform() {
-        this(0, 1);
-    }
+public class Uniform implements Distribution {
+    private final RealDistribution uniform;
 
     public Uniform(double lower, double upper) {
-        // FIXME: Error if lower >= upper
-        this.lower = lower;
-        this.upper = upper;
+        uniform = new UniformRealDistribution(lower, upper);
     }
 
     public double sample() {
-        double u = Math.random();
-        return u * upper + (1 - u) * lower;
+        return uniform.sample();
+    }
+
+    @Override
+    public RealDistribution getDistribution() {
+        return uniform;
     }
 }

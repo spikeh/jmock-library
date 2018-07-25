@@ -1,15 +1,21 @@
 package org.jmock.internal.perf.stats;
 
+import org.apache.commons.math3.distribution.RealDistribution;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import org.apache.commons.math3.stat.inference.KolmogorovSmirnovTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.jmock.internal.perf.distribution.Distribution;
+
+import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class PerfStatistics {
-    public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
+    private static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
 
     public static Matcher<List<Double>> hasPercentile(final int i, final Matcher<Double> percentileCheck) {
         return new TypeSafeMatcher<List<Double>>() {
@@ -69,8 +75,61 @@ public class PerfStatistics {
         };
     }
 
+    public static Matcher<List<Double>> matchDistribution(Distribution distribution) {
+        return new TypeSafeMatcher<List<Double>>() {
+            double pvalue;
+            String mismatch;
+
+            @Override
+            protected boolean matchesSafely(List<Double> doubles) {
+                /*
+                double[] data = toPrimitive(doubles);
+                pvalue = new KolmogorovSmirnovTest().kolmogorovSmirnovTest(distribution, data);
+                return greaterThanOrEqualTo(0.01).matches(pvalue);
+                */
+
+                RealDistribution underlyingDist = distribution.getDistribution();
+                if (underlyingDist == null)
+                    return false;
+
+                double sampleMean = mean(doubles);
+                double matchMean = underlyingDist.getNumericalMean();
+                if (sampleMean > matchMean) {
+                    mismatch = String.format("Sample mean: %f does not match distribution mean: %f", sampleMean, matchMean);
+                    return false;
+                }
+
+                Percentile percentile = new Percentile();
+                double[] samples = toPrimitive(doubles);
+                double[] compare = new double[10000];
+                for (int i = 0; i < 10000; i++) {
+                    compare[i] = distribution.sample();
+                }
+                for (int i = 10; i <= 80; i += 10) {
+                    double samplesPercentile = percentile.evaluate(samples, i);
+                    double comparePercentile = percentile.evaluate(compare, i);
+                    if (samplesPercentile > comparePercentile) {
+                        mismatch = String.format("%dth percentile doesn't match", i);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendValue("percentile should be smaller");
+            }
+
+            @Override
+            protected void describeMismatchSafely(List<Double> doubles, Description description) {
+                description.appendValue(mismatch);
+            }
+        };
+    }
+
     private static double percentile(int i, List<Double> runTimes) {
-        return new Percentile().evaluate(toPrimitive(runTimes.toArray(new Double[0])), i);
+        return new Percentile().evaluate(toPrimitive(runTimes), i);
     }
 
     private static double mean(List<Double> runTimes) {
@@ -91,15 +150,15 @@ public class PerfStatistics {
         }
     }
 
-    public static double[] toPrimitive(final Double[] array) {
-        if (array == null) {
+    private static double[] toPrimitive(final List<Double> array) {
+        if (array == null)
             return null;
-        } else if (array.length == 0) {
+        else if (array.size() == 0)
             return EMPTY_DOUBLE_ARRAY;
-        }
-        final double[] result = new double[array.length];
-        for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].doubleValue();
+        final double[] result = new double[array.size()];
+        Iterator<Double> it = array.iterator();
+        for (int i = 0; i < result.length; i++) {
+            result[i] = it.next();
         }
         return result;
     }

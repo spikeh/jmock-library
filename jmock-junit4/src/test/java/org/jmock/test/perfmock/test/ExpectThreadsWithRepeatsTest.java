@@ -46,6 +46,7 @@ public class ExpectThreadsWithRepeatsTest {
             });
         });
 
+        System.out.println(context.runtimes().size());
         assertThat(context.runtimes(), hasPercentile(80, lessThan(800.0)));
     }
 }

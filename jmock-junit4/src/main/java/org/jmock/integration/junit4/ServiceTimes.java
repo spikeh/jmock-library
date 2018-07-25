@@ -7,7 +7,7 @@ import java.io.IOException;
 public class ServiceTimes {
 
     public static Distribution exponentialDist(double mean) {
-        return new Exp(1 / mean);
+        return new Exp(mean);
     }
 
     public static Distribution constant(double value) {
@@ -20,10 +20,6 @@ public class ServiceTimes {
 
     public static Distribution paretoDist(double scale, double shape) {
         return new Pareto(scale, shape);
-    }
-
-    public static Distribution poissonDist(double lambda) {
-        return new Poisson(lambda);
     }
 
     public static Distribution uniformDist(double min, double max) {

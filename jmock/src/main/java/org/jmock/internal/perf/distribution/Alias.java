@@ -1,5 +1,7 @@
 package org.jmock.internal.perf.distribution;
 
+import org.apache.commons.math3.distribution.RealDistribution;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serializable;
@@ -104,5 +106,10 @@ public class Alias implements Distribution, Serializable {
         int i = toss ? column : alias[column];
 
         return vals.get(i);
+    }
+
+    @Override
+    public RealDistribution getDistribution() {
+        return null;
     }
 }
