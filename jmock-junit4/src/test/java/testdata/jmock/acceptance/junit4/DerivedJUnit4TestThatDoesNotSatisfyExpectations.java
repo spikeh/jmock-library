@@ -1,6 +1,6 @@
 package testdata.jmock.acceptance.junit4;
 
-import org.jmock.Expectations;
+import uk.davidwei.perfmock.Expectations;
 import org.junit.Test;
 
 public class DerivedJUnit4TestThatDoesNotSatisfyExpectations extends BaseClassWithMockery {

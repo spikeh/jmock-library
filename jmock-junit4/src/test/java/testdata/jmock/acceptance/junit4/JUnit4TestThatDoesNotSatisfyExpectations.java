@@ -1,9 +1,9 @@
 package testdata.jmock.acceptance.junit4;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
+import uk.davidwei.perfmock.Expectations;
+import uk.davidwei.perfmock.Mockery;
+import uk.davidwei.perfmock.integration.junit4.JMock;
+import uk.davidwei.perfmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
