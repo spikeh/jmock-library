@@ -55,12 +55,7 @@ public class NetworkDispatcher {
     public void query(Invocation invocation, PerformanceModel expectationModel, Param param) {
         long threadId = Thread.currentThread().getId();
         String threadName = Thread.currentThread().getName();
-        PerformanceModel model;
-        if (expectationModel != null) {
-            model = expectationModel;
-        } else {
-            model = models.get(invocation.getInvokedObject().toString());
-        }
+        PerformanceModel model = expectationModel == null ? models.get(invocation.getInvokedObject().toString()) : expectationModel;
         if (model == null) {
             return;
         }

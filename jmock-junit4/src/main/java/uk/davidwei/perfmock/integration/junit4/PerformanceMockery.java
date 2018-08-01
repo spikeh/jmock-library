@@ -5,11 +5,8 @@ import uk.davidwei.perfmock.agent.ThreadConsumer;
 import uk.davidwei.perfmock.internal.ExpectationBuilder;
 import uk.davidwei.perfmock.internal.InvocationDispatcher;
 import uk.davidwei.perfmock.internal.NetworkDispatcher;
-import uk.davidwei.perfmock.internal.perf.Delay;
 import uk.davidwei.perfmock.internal.perf.PerformanceModel;
 import uk.davidwei.perfmock.internal.perf.Sim;
-import uk.davidwei.perfmock.internal.perf.distribution.Distribution;
-import uk.davidwei.perfmock.internal.perf.network.ISNetwork;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 
