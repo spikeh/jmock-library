@@ -2,6 +2,7 @@ package uk.davidwei.perfmock.internal.perf.distribution;
 
 import org.apache.commons.math3.distribution.RealDistribution;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public abstract class EmpiricalDistribution implements Distribution {
@@ -32,7 +33,9 @@ public abstract class EmpiricalDistribution implements Distribution {
 
     public double sample() {
         double rn = rng.nextDouble();
-        int pos = searchInsert(rn);
+        int pos = Arrays.binarySearch(cdf, rn);
+        if (pos < 0)
+            pos = ~pos;
         return mids[pos];
     }
 
