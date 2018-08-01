@@ -9,6 +9,7 @@ import uk.davidwei.perfmock.internal.matcher.AllParametersMatcher;
 import uk.davidwei.perfmock.internal.matcher.MethodNameMatcher;
 import uk.davidwei.perfmock.internal.matcher.MockObjectMatcher;
 import uk.davidwei.perfmock.internal.perf.Param;
+import uk.davidwei.perfmock.internal.perf.PerformanceModel;
 import uk.davidwei.perfmock.syntax.MethodClause;
 import uk.davidwei.perfmock.syntax.ParametersClause;
 import uk.davidwei.perfmock.syntax.ReceiverClause;
@@ -59,6 +60,10 @@ public class InvocationExpectationBuilder
 
     public void setParam(Param param) {
         expectation.setParam(param);
+    }
+
+    public void setModel(PerformanceModel model) {
+        expectation.setPerformanceModel(model);
     }
     
     public void addSideEffect(SideEffect sideEffect) {

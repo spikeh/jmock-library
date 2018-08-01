@@ -153,10 +153,6 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
         mockerySemaphore.release();
     }
 
-    public <T> T mock(Class<T> typeToMock, Distribution distribution) {
-        return mock(typeToMock, new ISNetwork(PerformanceMockery.INSTANCE.sim(), new Delay(distribution)));
-    }
-
     public <T> T mock(Class<T> typeToMock, PerformanceModel model) {
         String defaultName = namingScheme.defaultNameFor(typeToMock);
         if (mockNames.contains(defaultName)) {

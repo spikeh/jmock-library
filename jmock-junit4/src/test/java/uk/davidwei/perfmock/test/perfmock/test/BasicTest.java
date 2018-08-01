@@ -13,8 +13,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
+import static org.hamcrest.number.OrderingComparison.lessThan;
 import static uk.davidwei.perfmock.integration.junit4.ServiceTimes.constant;
 import static org.junit.Assert.assertThat;
+import static uk.davidwei.perfmock.integration.junit4.ServiceTimes.normalDist;
 
 public class BasicTest {
     static final long USER_ID = 1111L;
@@ -31,13 +33,13 @@ public class BasicTest {
 
         context.checking(new Expectations() {{
             exactly(1).of(socialGraph).query(USER_ID);
-            will(returnValue(FRIEND_IDS));
+            will(returnValue(FRIEND_IDS)); inTime(normalDist(100, 10));
             exactly(4).of(userDetails).lookup(with(any(Long.class)));
-            will(returnValue(new User()));
+            will(returnValue(new User())); inTime(constant(100));
         }});
 
         new ProfileController(socialGraph, userDetails).lookUpFriends(USER_ID);
 
-        assertThat(context.runtime(), comparesEqualTo(600.0));
+        assertThat(context.runtime(), lessThan(600.0));
     }
 }

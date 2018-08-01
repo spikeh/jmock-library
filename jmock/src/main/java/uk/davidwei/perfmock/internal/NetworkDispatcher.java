@@ -52,10 +52,15 @@ public class NetworkDispatcher {
         aliveParentThreads = threads;
     }
 
-    public void query(Invocation invocation, Param param) {
+    public void query(Invocation invocation, PerformanceModel expectationModel, Param param) {
         long threadId = Thread.currentThread().getId();
         String threadName = Thread.currentThread().getName();
-        PerformanceModel model = models.get(invocation.getInvokedObject().toString());
+        PerformanceModel model;
+        if (expectationModel != null) {
+            model = expectationModel;
+        } else {
+            model = models.get(invocation.getInvokedObject().toString());
+        }
         if (model == null) {
             return;
         }

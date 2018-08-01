@@ -16,21 +16,6 @@ public abstract class EmpiricalDistribution implements Distribution {
         this.cdf = cdf;
     }
 
-    private int searchInsert(double target) {
-        int i = 0;
-        int j = cdf.length - 1;
-        while (i <= j) {
-            int mid = (i + j) / 2;
-            if (target > cdf[mid])
-                i = mid + 1;
-            else if (target < cdf[mid])
-                j = mid - 1;
-            else
-                return mid;
-        }
-        return i;
-    }
-
     public double sample() {
         double rn = rng.nextDouble();
         int pos = Arrays.binarySearch(cdf, rn);

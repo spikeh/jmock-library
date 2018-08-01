@@ -8,6 +8,7 @@ import uk.davidwei.perfmock.api.Expectation;
 import uk.davidwei.perfmock.api.Invocation;
 import uk.davidwei.perfmock.internal.matcher.MethodMatcher;
 import uk.davidwei.perfmock.internal.perf.Param;
+import uk.davidwei.perfmock.internal.perf.PerformanceModel;
 import uk.davidwei.perfmock.lib.action.VoidAction;
 
 import java.lang.reflect.Method;
@@ -32,6 +33,7 @@ public class InvocationExpectation implements Expectation {
     private boolean actionIsDefault = true;
     private List<OrderingConstraint> orderingConstraints = new ArrayList<OrderingConstraint>();
     private List<SideEffect> sideEffects = new ArrayList<SideEffect>();
+    private PerformanceModel model = null;
     
 	private int invocationCount = 0;
 	
@@ -81,6 +83,14 @@ public class InvocationExpectation implements Expectation {
     public void setDefaultAction(Action action) {
         this.action = action;
         this.actionIsDefault = true;
+    }
+
+    public void setPerformanceModel(PerformanceModel model) {
+        this.model = model;
+    }
+
+    public PerformanceModel getPerformanceModel() {
+        return model;
     }
     
     public void describeTo(Description description) {
