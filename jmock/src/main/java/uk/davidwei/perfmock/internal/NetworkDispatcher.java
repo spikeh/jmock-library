@@ -15,13 +15,14 @@ public class NetworkDispatcher {
     public static final List<String> allChildNames = Collections.synchronizedList(new ArrayList<String>());
     private final Sim sim;
     private final Semaphore mockerySemaphore;
-    private final Map<String, PerformanceModel> models = Collections.synchronizedMap(new HashMap<String, PerformanceModel>());
+    protected final Map<String, PerformanceModel> models = Collections.synchronizedMap(new HashMap<String, PerformanceModel>());
     private final Map<Long, Semaphore> threadSemaphores = Collections.synchronizedMap(new HashMap<Long, Semaphore>());
     private final AtomicInteger childrenInQuery = new AtomicInteger();
     private final AtomicInteger parentsInQuery = new AtomicInteger();
     private AtomicInteger aliveChildThreads;
     private AtomicInteger aliveParentThreads;
     private boolean debug = false;
+    private boolean tense = false;
 
     public NetworkDispatcher(Sim sim, Semaphore mockerySemaphore) {
         this.sim = sim;
@@ -61,6 +62,9 @@ public class NetworkDispatcher {
         }
         // need to know about thread's parent...
         model.schedule(threadId, invocation, param);
+        if (tense) {
+            return;
+        }
         // For the case of one A, the response time of A is the last exiting thread
         // For the case of multiple A, the response time of each A is the sum of all mocked calls
         //if (threadId > 1) {
@@ -109,6 +113,10 @@ public class NetworkDispatcher {
 
     public void enableDebug() {
         this.debug = true;
+    }
+
+    public void enableTense() {
+        this.tense = true;
     }
 
     private void debugPrint(String msg) {

@@ -4,6 +4,7 @@ import uk.davidwei.perfmock.internal.perf.Delay;
 import uk.davidwei.perfmock.internal.perf.PerformanceModel;
 import uk.davidwei.perfmock.internal.perf.distribution.*;
 import uk.davidwei.perfmock.internal.perf.network.ISNetwork;
+import uk.davidwei.perfmock.internal.perf.network.TenseModel;
 
 import java.io.IOException;
 
@@ -31,5 +32,9 @@ public class ServiceTimes {
 
     public static PerformanceModel alias(String filePath) throws IOException {
         return new ISNetwork(PerformanceMockery.INSTANCE.sim(), new Delay(new Alias(filePath)));
+    }
+
+    public static PerformanceModel tenseConstant(double value) {
+        return new TenseModel(PerformanceMockery.INSTANCE.sim(), new Delay(new Deterministic(value)));
     }
 }

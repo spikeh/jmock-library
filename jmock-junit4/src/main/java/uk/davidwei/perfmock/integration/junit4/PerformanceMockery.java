@@ -64,6 +64,7 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     private boolean concurrentTest;
     private boolean threadedTest;
     private boolean debug = false;
+    private boolean tense = false;
     private List<Double> threadResponseTimes = Collections.synchronizedList(new ArrayList<Double>());
 
     /* Used in multi-threaded tests to check that the correct number of threads were created.
@@ -161,17 +162,22 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     }
 
     public void repeat(int times, final Runnable test) {
-        for (int i = 0; i < 10 + times; i++) {
-            test.run();
-            sim.stop();
-            mockerySemaphore.drainPermits();
-            concurrentTest = false;
-            threadedTest = false;
-            // For the case of repeat but not runConcurrent
-            if (threadResponseTimes.size() == i) {
-                long nanoTime = sim.getCurrentThreadTotalCpuTime();
-                threadResponseTimes.add(sim.finalThreadResponseTime() + ((double)nanoTime/1000000));
-                sim.resetCurrentThread();
+        if (!tense) {
+            for (int i = 0; i < 10 + times; i++) {
+                test.run();
+                sim.stop();
+                mockerySemaphore.drainPermits();
+                concurrentTest = false;
+                threadedTest = false;
+                // For the case of repeat but not runConcurrent
+                if (threadResponseTimes.size() == i) {
+                    long nanoTime = sim.getCurrentThreadTotalCpuTime();
+                    threadResponseTimes.add(sim.finalThreadResponseTime() + ((double) nanoTime / 1000000));
+                    sim.resetCurrentThread();
+                }
+            }
+        } else {
+            for (int i = 0; i < 10 + times; i++) {
             }
         }
         threadResponseTimes = threadResponseTimes.subList(10, threadResponseTimes.size());
@@ -463,5 +469,11 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
         } else {
             return 0.0;
         }
+    }
+
+    public void enableTense() {
+        tense = true;
+        networkDispatcher.enableTense();
+        sim.enableTense();
     }
 }
