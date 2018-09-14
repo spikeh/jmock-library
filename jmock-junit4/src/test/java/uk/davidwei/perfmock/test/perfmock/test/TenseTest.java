@@ -34,16 +34,17 @@ public class TenseTest {
         final UserDetailsService userDetails = context.mock(UserDetailsService.class, tenseConstant(100));
         context.enableTense();
 
-        context.checking(new Expectations() {{
-            exactly(1).of(socialGraph).query(USER_ID);
+        context.repeat(20, () -> {
+            context.checking(new Expectations() {{
+                exactly(1).of(socialGraph).query(USER_ID);
                 will(returnValue(FRIEND_IDS));
-            exactly(4).of(userDetails).lookup(with(any(Long.class)));
+                exactly(4).of(userDetails).lookup(with(any(Long.class)));
                 will(returnValue(new User()));
-        }});
+            }});
 
-        new ProfileController(socialGraph, userDetails).lookUpFriends(USER_ID);
+            new ProfileController(socialGraph, userDetails).lookUpFriends(USER_ID);
+        });
 
-        assertThat(context.runtime(), lessThan(800.0));
-        System.out.println(context.runtime());
+        System.out.println(context.runtimes());
     }
 }

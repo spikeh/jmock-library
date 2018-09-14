@@ -82,6 +82,12 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
      */
     private ThreadLocal<Integer> expectedChildThreads = new ThreadLocal<>();
 
+    private ThreadConsumer tensePreCallback = new ThreadConsumer() {
+        @Override
+        public void accept(Thread thread) {
+        }
+    };
+
     public PerformanceMockery() {
         PerformanceMockery.INSTANCE = this;
         InvocationDispatcher.setNetworkDispatcher(networkDispatcher);
@@ -162,22 +168,17 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     }
 
     public void repeat(int times, final Runnable test) {
-        if (!tense) {
-            for (int i = 0; i < 10 + times; i++) {
-                test.run();
-                sim.stop();
-                mockerySemaphore.drainPermits();
-                concurrentTest = false;
-                threadedTest = false;
-                // For the case of repeat but not runConcurrent
-                if (threadResponseTimes.size() == i) {
-                    long nanoTime = sim.getCurrentThreadTotalCpuTime();
-                    threadResponseTimes.add(sim.finalThreadResponseTime() + ((double) nanoTime / 1000000));
-                    sim.resetCurrentThread();
-                }
-            }
-        } else {
-            for (int i = 0; i < 10 + times; i++) {
+        for (int i = 0; i < 10 + times; i++) {
+            test.run();
+            sim.stop();
+            mockerySemaphore.drainPermits();
+            concurrentTest = false;
+            threadedTest = false;
+            // For the case of repeat but not runConcurrent
+            if (threadResponseTimes.size() == i) {
+                long nanoTime = sim.getCurrentThreadTotalCpuTime();
+                threadResponseTimes.add(sim.finalThreadResponseTime() + ((double) nanoTime / 1000000));
+                sim.resetCurrentThread();
             }
         }
         threadResponseTimes = threadResponseTimes.subList(10, threadResponseTimes.size());

@@ -30,7 +30,6 @@ public class Sim {
 
     private double currentVTime = 0.0;
     private boolean isTenseEnabled = false;
-    private JavaTense tense;
     private long tenseStartTime = -1;
 
     // Called from QN models
@@ -41,7 +40,7 @@ public class Sim {
 
     public void enableTense() {
         isTenseEnabled = true;
-        tense = new JavaTense();
+        JavaTense.init();
     }
 
     // Called from QN models
@@ -64,7 +63,7 @@ public class Sim {
     // TODO Multithread?
     public void schedule(long nanos) {
         if (isTenseEnabled) {
-            tense.jump(nanos);
+            JavaTense.jump0(nanos);
         }
     }
 
@@ -84,7 +83,7 @@ public class Sim {
     public void start() {
         if (isTenseEnabled) {
             if (tenseStartTime < 0) {
-                tenseStartTime = tense.now();
+                tenseStartTime = JavaTense.time();
             }
             return;
         }
@@ -159,7 +158,7 @@ public class Sim {
     // Return start time minus end time if Tense is enabled
     public double finalThreadResponseTime() {
         if (isTenseEnabled) {
-            return (tense.now() - tenseStartTime) / 1000000.0;
+            return (JavaTense.time() - tenseStartTime) / 1000000.0;
         }
         long threadId = Thread.currentThread().getId();
         if (perThreadEntryTime.get(threadId) == null) {

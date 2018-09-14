@@ -18,7 +18,7 @@ static __thread int tense_fd;
 static __thread uint32_t tense[2];
 
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_init
-  (JNIEnv *env, jobject thisObj)
+  (JNIEnv *env, jclass thisObj)
 {
     tense[FASTER] = 1;
     tense[SLOWER] = 1;
@@ -43,13 +43,13 @@ success:
 }
 
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_destroy
-  (JNIEnv *env, jobject thisObj)
+  (JNIEnv *env, jclass thisObj)
 {
     return close(tense_fd);
 }
 
 JNIEXPORT jlong JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_time
-  (JNIEnv *env, jobject thisObj)
+  (JNIEnv *env, jclass thisObj)
 {
     struct timespec time;
     read(tense_fd, &time, 0);
@@ -58,7 +58,7 @@ JNIEXPORT jlong JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTens
 }
 
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_scale
-  (JNIEnv *env, jobject thisObj, jint percent)
+  (JNIEnv *env, jclass thisObj, jint percent)
 {
     tense[FASTER] *= percent;
     tense[SLOWER] *= 100;
@@ -66,7 +66,7 @@ JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense
 }
 
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_reset
-  (JNIEnv *env, jobject thisObj)
+  (JNIEnv *env, jclass thisObj)
 {
     tense[FASTER] = 1;
     tense[SLOWER] = 1;
@@ -74,14 +74,14 @@ JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense
 }
 
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_sleep0
-  (JNIEnv *env, jobject thisObj, jlong nanos)
+  (JNIEnv *env, jclass thisObj, jlong nanos)
 {
     off64_t ret = lseek64(tense_fd, (off64_t)nanos, SEEK_HOLE);
     return ret < 0 ? ret : 0;
 }
 
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_jump0
-  (JNIEnv *env, jobject thisObj, jlong nanos)
+  (JNIEnv *env, jclass thisObj, jlong nanos)
 {
     off64_t ret = lseek64(tense_fd, (off64_t)nanos, SEEK_CUR);
     return ret < 0 ? ret : 0;

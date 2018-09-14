@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_init
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     uk_davidwei_perfmock_internal_perf_network_JavaTense
@@ -21,7 +21,7 @@ JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_destroy
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     uk_davidwei_perfmock_internal_perf_network_JavaTense
@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_time
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     uk_davidwei_perfmock_internal_perf_network_JavaTense
@@ -37,7 +37,7 @@ JNIEXPORT jlong JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTens
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_scale
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     uk_davidwei_perfmock_internal_perf_network_JavaTense
@@ -45,7 +45,7 @@ JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_reset
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     uk_davidwei_perfmock_internal_perf_network_JavaTense
@@ -53,7 +53,7 @@ JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_sleep0
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     uk_davidwei_perfmock_internal_perf_network_JavaTense
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_uk_davidwei_perfmock_internal_perf_network_JavaTense_jump0
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
