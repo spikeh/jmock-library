@@ -173,7 +173,6 @@ public class Sim {
         return perThreadExitTime.get(threadId) - perThreadEntryTime.get(threadId);
     }
 
-    // Should reset Tense stuff here...
     public void resetCurrentThread() {
         long threadId = Thread.currentThread().getId();
         perThreadEntryTime.remove(threadId);

@@ -9,6 +9,7 @@ import uk.davidwei.perfmock.internal.perf.PerformanceModel;
 import uk.davidwei.perfmock.internal.perf.Sim;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
+import uk.davidwei.perfmock.internal.perf.network.JavaTense;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     private boolean concurrentTest;
     private boolean threadedTest;
     private boolean debug = false;
-    private boolean tense = false;
+    private boolean tense = true;
     private List<Double> threadResponseTimes = Collections.synchronizedList(new ArrayList<Double>());
 
     /* Used in multi-threaded tests to check that the correct number of threads were created.
@@ -82,9 +83,142 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
      */
     private ThreadLocal<Integer> expectedChildThreads = new ThreadLocal<>();
 
+    private ThreadConsumer runConcurrentPreCallback = new ThreadConsumer() {
+        @Override
+        public void accept(Thread newThread) {
+            Thread currentThread = Thread.currentThread();
+            if (currentThread.getName().equals(mainThreadName)) {
+                String s = String.format("Main threadId = %d, name = %s --> Parent threadId = %d, name = %s",
+                        currentThread.getId(), currentThread.getName(),
+                        newThread.getId(), newThread.getName());
+                debugPrint(s);
+                assert (!parentThreads.containsKey(newThread.getId()));
+                PerformanceMockery.parentThreads.put(newThread.getId(), new ArrayList<Long>());
+                NetworkDispatcher.parentThreads.put(newThread.getId(), new ArrayList<Long>());
+            } else {
+                throw new RuntimeException("unexpected threads created");
+            }
+        }
+    };
+
+    private ThreadConsumer runConcurrentExpectThreadsPreCallback = new ThreadConsumer() {
+        @Override
+        public void accept(Thread newThread) {
+            Thread currentThread = Thread.currentThread();
+            if (currentThread.getName().equals(mainThreadName)) {
+                String s = String.format("Outer: Main threadId = %d, name = %s --> Parent threadId = %d, name = %s",
+                        currentThread.getId(), currentThread.getId(),
+                        newThread.getId(), newThread.getName());
+                debugPrint(s);
+                assert (!parentThreads.containsKey(newThread.getId()));
+                PerformanceMockery.parentThreads.put(newThread.getId(), new ArrayList<Long>());
+                NetworkDispatcher.parentThreads.put(newThread.getId(), new ArrayList<Long>());
+            } else {
+                String s = String.format("Inner: Parent threadId = %d, name = %s --> Child threadId = %d, name = %s",
+                        currentThread.getId(), currentThread.getName(),
+                        newThread.getId(), newThread.getName());
+                debugPrint(s);
+
+                aliveChildThreads.incrementAndGet();
+                int threads = createdChildThreads.get().incrementAndGet();
+                if (threads > expectedChildThreads.get()) {
+                    throw new RuntimeException("too many threads created: got " + threads + ", expected " + expectedChildThreads.get());
+                }
+
+                List<Long> perfParentThreads = PerformanceMockery.parentThreads.get(currentThread.getId());
+                if (perfParentThreads == null) {
+                    perfParentThreads = new ArrayList<>();
+                }
+                perfParentThreads.add(newThread.getId());
+
+                List<Long> networkParentThreads = NetworkDispatcher.parentThreads.get(currentThread.getId());
+                if (networkParentThreads == null) {
+                    networkParentThreads = new ArrayList<>();
+                }
+                networkParentThreads.add(newThread.getId());
+
+                PerformanceMockery.childToParentMap.put(newThread.getId(), currentThread.getId());
+                NetworkDispatcher.childToParentMap.put(newThread.getId(), currentThread.getId());
+            }
+        }
+    };
+
+    private ThreadConsumer expectThreadsPreCallback = new ThreadConsumer() {
+        @Override
+        public void accept(Thread newThread) {
+            Thread currentThread = Thread.currentThread();
+            if (currentThread.getName().equals(mainThreadName)) {
+                // Main thread creating a parent thread
+                String s = String.format("Main threadId = %d, name = %s --> Parent threadId = %d, name = %s",
+                        currentThread.getId(), currentThread.getName(),
+                        newThread.getId(), newThread.getName());
+                debugPrint(s);
+
+                PerformanceMockery.parentThreads.put(newThread.getId(), new ArrayList<Long>());
+                NetworkDispatcher.parentThreads.put(newThread.getId(), new ArrayList<Long>());
+            } else {
+                // Parent thread creating a child thread
+                String s = String.format("Parent threadId = %d, name = %s --> Child threadId = %d, name = %s",
+                        currentThread.getId(), currentThread.getName(),
+                        newThread.getId(), newThread.getName());
+                debugPrint(s);
+
+                int currentChildThreads = createdChildThreads.get().incrementAndGet();
+                if (currentChildThreads > expectedChildThreads.get()) {
+                    throw new RuntimeException("too many threads created: got " + currentChildThreads + ", expected " + expectedChildThreads.get());
+                }
+
+                List<Long> perfParentThreads = PerformanceMockery.parentThreads.get(currentThread.getId());
+                if (perfParentThreads == null) {
+                    perfParentThreads = new ArrayList<>();
+                }
+                perfParentThreads.add(newThread.getId());
+
+                List<Long> networkParentThreads = NetworkDispatcher.parentThreads.get(currentThread.getId());
+                if (networkParentThreads == null) {
+                    networkParentThreads = new ArrayList<>();
+                }
+                networkParentThreads.add(newThread.getId());
+
+                PerformanceMockery.childToParentMap.put(newThread.getId(), currentThread.getId());
+                NetworkDispatcher.childToParentMap.put(newThread.getId(), currentThread.getId());
+                NetworkDispatcher.allChildNames.add(newThread.getName());
+            }
+        }
+    };
+
+    private ThreadConsumer expectThreadsPostCallback = new ThreadConsumer() {
+        @Override
+        public void accept(Thread currentThread) {
+            // Only for child threads
+            if (!parentThreads.containsKey(currentThread.getId())) {
+                PerformanceMockery.INSTANCE.childEndCallback();
+            }
+        }
+    };
+
     private ThreadConsumer tensePreCallback = new ThreadConsumer() {
         @Override
-        public void accept(Thread thread) {
+        public void accept(Thread newThread) {
+            JavaTense.init();
+            // tense_time(&tense_start);
+            // clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t_start);
+            //
+            // start routine...
+            //
+            // clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t_end);
+            // tense_time(&tense_end);
+            //
+            // compute deltas
+            //
+            // tense_destroy();
+        }
+    };
+
+    private ThreadConsumer tensePostCallback = new ThreadConsumer() {
+        @Override
+        public void accept(Thread currentThread) {
+            JavaTense.destroy();
         }
     };
 
@@ -167,9 +301,9 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
         return mock(typeToMock, defaultName);
     }
 
-    public void repeat(int times, final Runnable test) {
+    public void repeat(int times, final Runnable testScenario) {
         for (int i = 0; i < 10 + times; i++) {
-            test.run();
+            testScenario.run();
             sim.stop();
             mockerySemaphore.drainPermits();
             concurrentTest = false;
@@ -189,27 +323,7 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
             throw new RuntimeException("test syntax error: runConcurrent must be nested above expectThreads");
         }
         concurrentTest = true;
-        PerfMockInstrumenter.setPreCallback(new ThreadConsumer() {
-            @Override
-            public void accept(Thread newlyCreatedThread) {
-                Thread currentParentThread = Thread.currentThread();
-                if (currentParentThread.getName().equals("main")) {
-                    if (debug) {
-                        System.out.println(
-                                "Outer; parent threadId = " + currentParentThread.getId() + ", name = "
-                                        + currentParentThread.getName() + " --> child threadId = "
-                                        + newlyCreatedThread.getId() + ", name = "
-                                        + newlyCreatedThread.getName());
-                    }
-                    assert (!parentThreads.containsKey(newlyCreatedThread.getId()));
-                    PerformanceMockery.parentThreads.put(newlyCreatedThread.getId(), new ArrayList<Long>());
-                    NetworkDispatcher.parentThreads.put(newlyCreatedThread.getId(), new ArrayList<Long>());
-                } else {
-                    // This should NOT happen
-                    throw new RuntimeException("unexpected threads created");
-                }
-            }
-        });
+        PerfMockInstrumenter.setPreCallback(runConcurrentPreCallback);
     
         setInvocationDispatcher(new ParallelInvocationDispatcher());
         this.threadCompleteSignal = new CountDownLatch(numThreads);
@@ -237,7 +351,6 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
             t.start();
         }
         startSignal.countDown();
-        //mainThreadRunnable.run();
         mainLoop();
         try {
             threadCompleteSignal.await();
@@ -248,169 +361,69 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
 
     public void expectThreads(final int expectedThreads, final Runnable testScenario) {
         threadedTest = true;
-        if (concurrentTest) {
-            // We're being run on a separate PerfMockery-n thread
-            expectedChildThreads.set(expectedThreads);
-            synchronized (this) {
-                if (!concurrentExpectThreadsInit) {
-                    PerfMockInstrumenter.setPreCallback(new ThreadConsumer() {
-                        @Override
-                        public void accept(Thread newlyCreatedThread) {
-                            Thread currentParentThread = Thread.currentThread();
-                            if (currentParentThread.getName().equals(mainThreadName)) {
-                                if (debug) {
-                                    System.out.println(
-                                            "Outer; parent threadId = " + currentParentThread.getId() + ", name = "
-                                                    + currentParentThread.getName() + " --> child threadId = "
-                                                    + newlyCreatedThread.getId() + ", name = "
-                                                    + newlyCreatedThread.getName());
-                                }
-                                assert (!parentThreads.containsKey(newlyCreatedThread.getId()));
-                                PerformanceMockery.parentThreads.put(newlyCreatedThread.getId(), new ArrayList<Long>());
-                                NetworkDispatcher.parentThreads.put(newlyCreatedThread.getId(), new ArrayList<Long>());
-                            } else {
-                                if (debug) {
-                                    System.out.println(
-                                            "Inner; parent threadId = " + currentParentThread.getId() + ", name = "
-                                                    + currentParentThread.getName() + " --> child threadId = "
-                                                    + newlyCreatedThread.getId() + ", name = "
-                                                    + newlyCreatedThread.getName());
-                                }
-                                aliveChildThreads.incrementAndGet();
-                                int threads = createdChildThreads.get().incrementAndGet();
-                                if (threads > expectedChildThreads.get()) {
-                                    throw new RuntimeException("too many threads created: got " + threads + ", expected " + expectedChildThreads.get());
-                                }
+        if (tense) {
+            if (concurrentTest) {
 
-                                List<Long> perfParentThreads = PerformanceMockery.parentThreads.get(currentParentThread.getId());
-                                if (perfParentThreads == null) {
-                                    perfParentThreads = new ArrayList<>();
-                                }
-                                perfParentThreads.add(newlyCreatedThread.getId());
-
-                                List<Long> networkParentThreads = NetworkDispatcher.parentThreads.get(currentParentThread.getId());
-                                if (networkParentThreads == null) {
-                                    networkParentThreads = new ArrayList<>();
-                                }
-                                networkParentThreads.add(newlyCreatedThread.getId());
-
-                                PerformanceMockery.childToParentMap.put(newlyCreatedThread.getId(), currentParentThread.getId());
-                                NetworkDispatcher.childToParentMap.put(newlyCreatedThread.getId(), currentParentThread.getId());
-                            }
-                        }
-                    });
-
-                    PerfMockInstrumenter.setPostCallback(new ThreadConsumer() {
-                        @Override
-                        public void accept(Thread currentThread) {
-                            // Only for child threads
-                            if (!parentThreads.containsKey(currentThread.getId())) {
-                                PerformanceMockery.INSTANCE.childEndCallback();
-                            }
-                        }
-                    });
-
-                    int numThreads = aliveParentThreads.get();
-                    threadCompleteSignal = new CountDownLatch(numThreads + (numThreads * expectedThreads));
-                    networkDispatcher.setAliveChildThreads(aliveChildThreads);
-                    concurrentExpectThreadsInit = true;
-                }
+            } else {
+                PerfMockInstrumenter.setPreCallback(tensePreCallback);
+                PerfMockInstrumenter.setPostCallback(tensePostCallback);
+                testScenario.run();
             }
-            testScenario.run();
         } else {
-            PerfMockInstrumenter.setPreCallback(new ThreadConsumer() {
-                @Override
-                public void accept(Thread newThread) {
-                    Thread currentThread = Thread.currentThread();
-                    if (currentThread.getName().equals(mainThreadName)) {
-                        // Main thread creating a parent thread
-                        String s = String.format("Main threadId = %d, name = %s --> Parent threadId = %d, name = %s",
-                                currentThread.getId(), currentThread.getName(),
-                                newThread.getId(), newThread.getName());
-                        debugPrint(s);
-
-                        PerformanceMockery.parentThreads.put(newThread.getId(), new ArrayList<Long>());
-                        NetworkDispatcher.parentThreads.put(newThread.getId(), new ArrayList<Long>());
-                    } else {
-                        // Parent thread creating a child thread
-                        String s = String.format("Parent threadId = %d, name = %s --> Child threadId = %d, name = %s",
-                                currentThread.getId(), currentThread.getName(),
-                                newThread.getId(), newThread.getName());
-                        debugPrint(s);
-
-                        int currentChildThreads = createdChildThreads.get().incrementAndGet();
-                        if (currentChildThreads > expectedChildThreads.get()) {
-                            throw new RuntimeException("too many threads created: got " + currentChildThreads + ", expected " + expectedChildThreads.get());
-                        }
-
-                        List<Long> perfParentThreads = PerformanceMockery.parentThreads.get(currentThread.getId());
-                        if (perfParentThreads == null) {
-                            perfParentThreads = new ArrayList<>();
-                        }
-                        perfParentThreads.add(newThread.getId());
-
-                        List<Long> networkParentThreads = NetworkDispatcher.parentThreads.get(currentThread.getId());
-                        if (networkParentThreads == null) {
-                            networkParentThreads = new ArrayList<>();
-                        }
-                        networkParentThreads.add(newThread.getId());
-
-                        PerformanceMockery.childToParentMap.put(newThread.getId(), currentThread.getId());
-                        NetworkDispatcher.childToParentMap.put(newThread.getId(), currentThread.getId());
-                        NetworkDispatcher.allChildNames.add(newThread.getName());
+            if (concurrentTest) {
+                // We're being run on a separate PerfMockery-n thread
+                expectedChildThreads.set(expectedThreads);
+                synchronized (this) {
+                    if (!concurrentExpectThreadsInit) {
+                        PerfMockInstrumenter.setPreCallback(runConcurrentExpectThreadsPreCallback);
+                        PerfMockInstrumenter.setPostCallback(expectThreadsPostCallback);
                     }
                 }
-            });
+                testScenario.run();
+            } else {
+                PerfMockInstrumenter.setPreCallback(expectThreadsPreCallback);
+                PerfMockInstrumenter.setPostCallback(expectThreadsPostCallback);
 
-            PerfMockInstrumenter.setPostCallback(new ThreadConsumer() {
-                @Override
-                public void accept(Thread currentThread) {
-                    // Only for child threads
-                    if (!parentThreads.containsKey(currentThread.getId())) {
-                        PerformanceMockery.INSTANCE.childEndCallback();
+                setInvocationDispatcher(new ParallelInvocationDispatcher());
+                // 1 = Parent
+                // expectedThreads = Child
+                this.threadCompleteSignal = new CountDownLatch(1 + expectedThreads);
+                Runnable parentRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            startSignal.await();
+                            expectedChildThreads.set(expectedThreads + 1);
+                            testScenario.run();
+                            assertIsSatisfied();
+                            parentEndCallback();
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            System.exit(1);
+                        }
                     }
-                }
-            });
+                };
 
-            setInvocationDispatcher(new ParallelInvocationDispatcher());
-            // 1 = Parent
-            // expectedThreads = Child
-            this.threadCompleteSignal = new CountDownLatch(1 + expectedThreads);
-            Runnable parentRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        startSignal.await();
-                        expectedChildThreads.set(expectedThreads + 1);
-                        testScenario.run();
-                        assertIsSatisfied();
-                        parentEndCallback();
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                        System.exit(1);
+                aliveChildThreads.set(expectedThreads);
+                networkDispatcher.setAliveChildThreads(aliveChildThreads);
+                aliveParentThreads.set(1);
+                networkDispatcher.setAliveParentThreads(aliveParentThreads);
+                for (int i = 0; i < 1; i++) {
+                    Thread t = new Thread(parentRunnable, "PerfMockery-" + i);
+                    Semaphore threadSemaphore = new Semaphore(0);
+                    networkDispatcher.registerThread(t.getId(), threadSemaphore);
+                    t.start();
+                }
+                startSignal.countDown();
+                mainLoop();
+                try {
+                    boolean success = threadCompleteSignal.await(3, TimeUnit.SECONDS);
+                    if (!success) {
+                        throw new Error("expected " + expectedThreads + " threads to be created");
                     }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            };
-
-            aliveChildThreads.set(expectedThreads);
-            networkDispatcher.setAliveChildThreads(aliveChildThreads);
-            aliveParentThreads.set(1);
-            networkDispatcher.setAliveParentThreads(aliveParentThreads);
-            for (int i = 0; i < 1; i++) {
-                Thread t = new Thread(parentRunnable, "PerfMockery-" + i);
-                Semaphore threadSemaphore = new Semaphore(0);
-                networkDispatcher.registerThread(t.getId(), threadSemaphore);
-                t.start();
-            }
-            startSignal.countDown();
-            mainLoop();
-            try {
-                boolean success = threadCompleteSignal.await(3, TimeUnit.SECONDS);
-                if (!success) {
-                    throw new Error("expected " + expectedThreads + " threads to be created");
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -450,6 +463,9 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
         }
         //System.out.println(threadResponseTimes);
         writeHtml(method);
+        if (tense) {
+            JavaTense.destroy();
+        }
     }
 
     public double runtime() {

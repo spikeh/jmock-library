@@ -1,24 +1,24 @@
 package uk.davidwei.perfmock.test.perfmock.test;
 
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import uk.davidwei.perfmock.Expectations;
 import uk.davidwei.perfmock.integration.junit4.PerformanceMockery;
 import uk.davidwei.perfmock.test.perfmock.example.ParallelProfileController;
 import uk.davidwei.perfmock.test.perfmock.example.SocialGraph;
 import uk.davidwei.perfmock.test.perfmock.example.User;
 import uk.davidwei.perfmock.test.perfmock.example.UserDetailsService;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.number.OrderingComparison.lessThan;
+import static org.junit.Assert.assertThat;
 import static uk.davidwei.perfmock.integration.junit4.ServiceTimes.exponentialDist;
 import static uk.davidwei.perfmock.internal.perf.stats.PerfStatistics.hasPercentile;
-import static org.junit.Assert.assertThat;
 
-public class ExpectThreadsTest {
+public class TenseThreadsTest {
     static final long USER_ID = 1111L;
     static final List<Long> FRIEND_IDS = Arrays.asList(2222L, 3333L, 4444L, 5555L);
 
@@ -26,11 +26,10 @@ public class ExpectThreadsTest {
     public PerformanceMockery context = new PerformanceMockery();
 
     @Test
-    @Ignore
     public void looksUpDetailsForEachFriend() {
         final SocialGraph socialGraph = context.mock(SocialGraph.class, exponentialDist(0.05));
         final UserDetailsService userDetails = context.mock(UserDetailsService.class, exponentialDist(0.03));
-        context.enableDebug();
+        context.enableTense();
         context.repeat(5, () -> {
             context.expectThreads(2, new Runnable() {
                 @Override
@@ -47,7 +46,7 @@ public class ExpectThreadsTest {
             });
         });
 
-        System.out.println(context.runtimes().size());
-        assertThat(context.runtimes(), hasPercentile(80, lessThan(800.0)));
+        System.out.println(context.runtimes());
+        //assertThat(context.runtimes(), hasPercentile(80, lessThan(800.0)));
     }
 }
