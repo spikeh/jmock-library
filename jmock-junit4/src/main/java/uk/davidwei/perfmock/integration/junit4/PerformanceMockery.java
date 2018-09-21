@@ -200,7 +200,13 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
     private ThreadConsumer tensePreCallback = new ThreadConsumer() {
         @Override
         public void accept(Thread newThread) {
-            JavaTense.init();
+            long currentThreadId = Thread.currentThread().getId();
+            // Only the parent, the main thread, will create children
+            PerformanceMockery.parentThreads.computeIfAbsent(currentThreadId, k -> new ArrayList<Long>()).add(newThread.getId());
+            NetworkDispatcher.parentThreads.computeIfAbsent(currentThreadId, k -> new ArrayList<Long>()).add(newThread.getId());
+            PerformanceMockery.childToParentMap.put(newThread.getId(), currentThreadId);
+            NetworkDispatcher.childToParentMap.put(newThread.getId(), currentThreadId);
+            NetworkDispatcher.allChildNames.add(newThread.getName());
             // tense_time(&tense_start);
             // clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t_start);
             //
@@ -212,6 +218,13 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
             // compute deltas
             //
             // tense_destroy();
+        }
+    };
+
+    private ThreadConsumer tenseStartCallback = new ThreadConsumer() {
+        @Override
+        public void accept(Thread thread) {
+            JavaTense.init();
         }
     };
 
@@ -367,6 +380,8 @@ public class PerformanceMockery extends JUnitRuleMockery implements MethodRule {
             } else {
                 PerfMockInstrumenter.setPreCallback(tensePreCallback);
                 PerfMockInstrumenter.setPostCallback(tensePostCallback);
+                PerfMockInstrumenter.setTenseStartCallback(tenseStartCallback);
+                setInvocationDispatcher(new ParallelInvocationDispatcher());
                 testScenario.run();
             }
         } else {

@@ -16,6 +16,7 @@ import java.util.List;
 import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertThat;
 import static uk.davidwei.perfmock.integration.junit4.ServiceTimes.exponentialDist;
+import static uk.davidwei.perfmock.integration.junit4.ServiceTimes.tenseConstant;
 import static uk.davidwei.perfmock.internal.perf.stats.PerfStatistics.hasPercentile;
 
 public class TenseThreadsTest {
@@ -27,10 +28,10 @@ public class TenseThreadsTest {
 
     @Test
     public void looksUpDetailsForEachFriend() {
-        final SocialGraph socialGraph = context.mock(SocialGraph.class, exponentialDist(0.05));
-        final UserDetailsService userDetails = context.mock(UserDetailsService.class, exponentialDist(0.03));
+        final SocialGraph socialGraph = context.mock(SocialGraph.class, tenseConstant(200));
+        final UserDetailsService userDetails = context.mock(UserDetailsService.class, tenseConstant(100));
         context.enableTense();
-        context.repeat(5, () -> {
+
             context.expectThreads(2, new Runnable() {
                 @Override
                 public void run() {
@@ -44,9 +45,8 @@ public class TenseThreadsTest {
                     new ParallelProfileController(socialGraph, userDetails).lookUpFriends(USER_ID);
                 }
             });
-        });
 
-        System.out.println(context.runtimes());
+        System.out.println(context.runtime());
         //assertThat(context.runtimes(), hasPercentile(80, lessThan(800.0)));
     }
 }

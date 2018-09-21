@@ -14,6 +14,7 @@ public class PerfMockInstrumenter implements ClassFileTransformer {
   private static volatile boolean canRewriteBootstrap;
   private static ThreadConsumer preCallback = null;
   private static ThreadConsumer postCallback = null;
+  private static ThreadConsumer tenseStartCallback = null;
   private static Runnable beforeExecuteCallback = null;
   private static Runnable afterExecuteCallback = null;
 
@@ -76,6 +77,12 @@ public class PerfMockInstrumenter implements ClassFileTransformer {
     }
   }
 
+  public static void doTenseStartCallback(Thread t) {
+    if (tenseStartCallback != null) {
+      tenseStartCallback.accept(t);
+    }
+  }
+
   public static void doBeforeExecuteCallback() {
     if (beforeExecuteCallback != null) {
       beforeExecuteCallback.run();
@@ -94,6 +101,10 @@ public class PerfMockInstrumenter implements ClassFileTransformer {
 
   public static void setPostCallback(ThreadConsumer r) {
     postCallback = r;
+  }
+
+  public static void setTenseStartCallback(ThreadConsumer r) {
+    tenseStartCallback = r;
   }
 
   public static void setBeforeExecuteCallback(Runnable r) {

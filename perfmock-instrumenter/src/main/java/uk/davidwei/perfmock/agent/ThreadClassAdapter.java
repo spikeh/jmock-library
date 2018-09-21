@@ -48,6 +48,15 @@ class ThreadClassAdapter extends ClassVisitor implements Opcodes {
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc,
             boolean itf) {
+          if (name.equals("run")) {
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(
+                    INVOKESTATIC,
+                    "uk/davidwei/perfmock/agent/PerfMockInstrumenter",
+                    "doTenseStartCallback",
+                    "(Ljava/lang/Thread;)V",
+                    false);
+          }
           super.visitMethodInsn(opcode, owner, name, desc, itf);
           if (name.equals("run")) {
             mv.visitVarInsn(ALOAD, 0);

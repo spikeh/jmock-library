@@ -59,7 +59,7 @@
                 <executions>
                     <execution>
                         <id>embed-jars</id>
-                        <phase>prepare-package</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>jarjar</goal>
                         </goals>

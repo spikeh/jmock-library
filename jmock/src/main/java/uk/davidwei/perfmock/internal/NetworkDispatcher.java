@@ -60,6 +60,7 @@ public class NetworkDispatcher {
         if (model == null) {
             return;
         }
+        System.out.println(threadId + " " + threadName);
         // need to know about thread's parent...
         model.schedule(threadId, invocation, param);
         if (tense) {

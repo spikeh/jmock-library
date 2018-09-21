@@ -1,5 +1,6 @@
 package uk.davidwei.perfmock.test.perfmock.test;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.davidwei.perfmock.Expectations;
@@ -30,6 +31,7 @@ public class TenseTest {
     public PerformanceMockery context = new PerformanceMockery();
 
     @Test
+    @Ignore
     public void looksUpDetailsForEachFriend() {
         final SocialGraph socialGraph = context.mock(SocialGraph.class, tenseConstant(200));
         final UserDetailsService userDetails = context.mock(UserDetailsService.class, tenseConstant(100));
